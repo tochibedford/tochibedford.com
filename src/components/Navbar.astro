@@ -7,18 +7,26 @@ import menuIcon from "./assets/menu.svg";
   class="bg-tMenuBack p-2 rounded-lg h-16 flex items-center gap-2 drop-shadow-[7px_7px_0px_#2225]"
 >
   <button
-    class="h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md"
+    class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md"
   >
-    <img src={menuIcon.src} alt="burger menu" class="w-5 h-5" />
+    <img
+      src={menuIcon.src}
+      alt="burger menu"
+      class="w-5 h-5 group-hover:scale-90 transition-transform"
+    />
   </button>
   {
     socialItems.map((social) => (
       <a
-        class="h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md cursor-pointer"
+        class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md cursor-pointer"
         target="_blank"
         href={social.link}
       >
-        <img src={social.image.src} alt="burger menu" class="w-full h-full" />
+        <img
+          src={social.image.src}
+          alt="burger menu"
+          class="w-full h-full group-hover:scale-90 transition-transform"
+        />
       </a>
     ))
   }
