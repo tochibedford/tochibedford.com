@@ -1,0 +1,27 @@
+---
+import HeroBanner from "../components/HeroBanner.astro";
+import "@fontsource/vina-sans";
+---
+
+<html lang="en" class="h-screen">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+    <style>
+      body {
+        font-family: "Vina Sans", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="h-screen bg-tOffWhite">
+    <HeroBanner />
+    <div class="w-full p-5">
+      <div class="bg-tWhiteBright rounded-xl min-h-[200px] container mx-auto">
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>

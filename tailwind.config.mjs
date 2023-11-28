@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         tBlack: "#232124",
+        tOffWhite: "#C8C8C8",
         tWhite: "#DEDEDE",
         tWhiteBright: "#E5E5E5",
         tWhiteBrighter: "#EEECEC",
