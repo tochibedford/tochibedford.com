@@ -10,6 +10,7 @@ export default {
         tWhiteBright: "#E5E5E5",
         tWhiteBrighter: "#EEECEC",
         tMenuDark: "#69636D",
+        tHighlight: "#36065C",
       },
     },
   },
