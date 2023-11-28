@@ -1,6 +1,7 @@
 ---
 import HeroBanner from "../components/HeroBanner.astro";
 import "@fontsource/vina-sans";
+import "@fontsource/ubuntu-mono";
 ---
 
 <html lang="en" class="h-screen">
@@ -10,11 +11,6 @@ import "@fontsource/vina-sans";
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>Astro</title>
-    <style>
-      body {
-        font-family: "Vina Sans", sans-serif;
-      }
-    </style>
   </head>
   <body class="h-screen bg-tOffWhite">
     <HeroBanner />
@@ -25,3 +21,12 @@ import "@fontsource/vina-sans";
     </div>
   </body>
 </html>
+
+<style is:global>
+  .vina_font {
+    font-family: "Vina Sans", sans-serif;
+  }
+  .ubuntu_mono_font {
+    font-family: "Ubuntu Mono", sans-serif;
+  }
+</style>
