@@ -11,6 +11,8 @@ export default {
         tWhiteBrighter: "#EEECEC",
         tMenuDark: "#69636D",
         tHighlight: "#36065C",
+        tMenuBack: "#CFCFCF",
+        tMenuItemBack: "#E0E0E0",
       },
     },
   },

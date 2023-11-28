@@ -2,9 +2,10 @@
 import HeroBanner from "../components/HeroBanner.astro";
 import "@fontsource/vina-sans";
 import "@fontsource/ubuntu-mono";
+import Navbar from "../components/Navbar.astro";
 ---
 
-<html lang="en" class="h-screen">
+<html lang="en" class="min-h-screen">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -13,7 +14,7 @@ import "@fontsource/ubuntu-mono";
     <title>Astro</title>
   </head>
   <body
-    class="h-screen bg-tOffWhite selection:bg-tHighlight selection:text-tOffWhite"
+    class="min-h-screen bg-tOffWhite selection:bg-tHighlight selection:text-tOffWhite"
   >
     <HeroBanner />
     <div class="w-full p-5">
@@ -21,6 +22,9 @@ import "@fontsource/ubuntu-mono";
         <slot />
       </div>
     </div>
+    <section class="fixed bottom-5 left-1/2 -translate-x-1/2">
+      <Navbar />
+    </section>
   </body>
 </html>
 

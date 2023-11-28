@@ -1,0 +1,23 @@
+---
+import { navMenuItems, socialItems } from "../staticData";
+import menuIcon from "./assets/menu.svg";
+---
+
+<nav class="bg-tMenuBack p-2 rounded-lg h-16 flex items-center gap-2">
+  <button
+    class="h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md"
+  >
+    <img src={menuIcon.src} alt="burger menu" class="w-5 h-5" />
+  </button>
+  {
+    socialItems.map((social) => (
+      <a
+        class="h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md cursor-pointer"
+        target="_blank"
+        href={social.link}
+      >
+        <img src={social.image.src} alt="burger menu" class="w-full h-full" />
+      </a>
+    ))
+  }
+</nav>
