@@ -1,6 +1,8 @@
 ---
 import { navMenuItems, socialItems } from "../staticData";
 import menuIcon from "./assets/menu.svg";
+import closeIcon from "./assets/close.svg";
+import classNames from "classnames";
 ---
 
 <nav
@@ -8,12 +10,22 @@ import menuIcon from "./assets/menu.svg";
 >
   <button
     class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md"
+    id="menuBurgerContainer"
   >
-    <img
-      src={menuIcon.src}
-      alt="burger menu"
-      class="w-5 h-5 group-hover:scale-90 transition-transform"
-    />
+    <div class="w-5 h-5 overflow-hidden flex relative pointer-events-none">
+      <img
+        id="burger"
+        src={menuIcon.src}
+        alt="burger menu"
+        class={"w-5 h-5 group-hover:scale-90 transition-transform absolute left-0"}
+      />
+      <img
+        id="close"
+        src={closeIcon.src}
+        alt="burger menu"
+        class={"w-5 h-5 group-hover:scale-90 transition-transform translate-x-full absolute left-0"}
+      />
+    </div>
   </button>
   {
     socialItems.map((social) => (
@@ -31,3 +43,22 @@ import menuIcon from "./assets/menu.svg";
     ))
   }
 </nav>
+
+<script>
+  const menuBurgerContainerEl = document.getElementById("menuBurgerContainer");
+  const burgerEl = document.getElementById("burger");
+  const closeEl = document.getElementById("close");
+  let menuOpen = false;
+
+  menuBurgerContainerEl?.addEventListener("click", () => {
+    console.log(menuOpen);
+    if (!menuOpen && burgerEl && closeEl) {
+      burgerEl.style.transform = "translate(-100%, 0%)";
+      closeEl.style.transform = "translate(0%, 0%)";
+    } else if (menuOpen && burgerEl && closeEl) {
+      closeEl.style.transform = "translate(100%, 0%)";
+      burgerEl.style.transform = "translate(0%, 0%)";
+    }
+    menuOpen = !menuOpen;
+  });
+</script>

@@ -54,3 +54,59 @@ export const socialItems: {
     image: instagramIcon,
   },
 ];
+
+export enum WorkState {
+  Live,
+  Code,
+}
+
+export const highlightedWork = [];
+
+export enum Tool {
+  Typescript = "Typescript",
+  NodeJs = "Node JS",
+  Javascript = "Javascript",
+  SCSS = "SCSS",
+  SASS = "SASS",
+  Python = "Python",
+  MYSQL = "MySQL",
+  CSharp = "C#",
+  Jest = "Jest",
+  React = "React",
+  Bootstrap = "Bootstrap",
+  Flask = "Flask",
+  Express = "Express",
+  Webpack = "Webpack",
+  Babel = "Babel",
+  Parcel = "Parcel",
+  MongoDB = "MongoDB",
+  FireStore = "Firebase FireStore",
+  SanityCMS = "Sanity CMS",
+  Vite = "Vite",
+}
+
+export const works: {
+  title: string;
+  desc: string;
+  tools: Tool[];
+  highlighted?: boolean;
+}[] = [
+  {
+    title: "44DB Website",
+    desc: "Website done for the super producer collective 44DB.",
+    tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
+    highlighted: true,
+  },
+  {
+    title: "44DB Website",
+    desc: "Website done for the super producer collective 44DB.",
+    tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
+    highlighted: true,
+  },
+  {
+    title: "44DB Website",
+    desc: "Website done for the super producer collective 44DB.",
+    tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
+    highlighted: false,
+  },
+];
