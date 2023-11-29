@@ -1,13 +1,14 @@
 ---
 import HeroLayout from "../layouts/HeroLayout.astro";
+import { works } from "../staticData";
 ---
 
 <HeroLayout>
-  <main class="p-5 md:px-32 text-justify">
+  <main class="p-5 md:px-32 text-justify ubuntu_mono_font">
     <div class="w-16 h-16 overflow-hidden rounded-md float-left my-1 mr-2">
       <img src="/tochi.jpg" alt="profile image" class="saturate-0" />
     </div>
-    <div class="ubuntu_mono_font">
+    <section>
       I am a seasoned software developer with 3.5 years of experience
       specializing in the development of production web applications within
       diverse team environments. My academic background includes a major in
@@ -17,6 +18,16 @@ import HeroLayout from "../layouts/HeroLayout.astro";
       contribute to the ever-evolving landscape of software development. Driven
       by an insatiable curiosity, I am gradually delving deeper into
       understanding computers at a fundamental level.
-    </div>
+    </section>
+    <section>
+      {
+        works.map((work, index) => {
+          if (index == 0) {
+            return <div class="">dd</div>;
+          }
+          return <div class="border border-t-tMenuDark">dd</div>;
+        })
+      }
+    </section>
   </main>
 </HeroLayout>
