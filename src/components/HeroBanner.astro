@@ -1,8 +1,16 @@
+---
+const url = Astro.url;
+console.log(url.pathname);
+---
+
 <header class="w-full text-5xl text-tWhite vina_font">
   <div class="bg-tBlack h-[225px] flex items-center px-10">
-    <div class="container mx-auto flex items-center justify-end">
+    <a
+      href={url.pathname !== "/" ? "/" : undefined}
+      class="container mx-auto flex items-center justify-end"
+    >
       DEV.TOCHiBEDFORD.COM
-    </div>
+    </a>
   </div>
   <div class="py-2 w-full bg-tBlack opacity-60"></div>
   <div class="py-2 w-full bg-tBlack opacity-40"></div>
