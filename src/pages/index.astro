@@ -31,7 +31,7 @@ import { works } from "../staticData";
             return (
               <div
                 class={
-                  "highlightedWorkItem h-64 rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
+                  "highlightedWorkItem min-h-64 rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
                   (index !== arr.length - 1 //applies to everything but last element
                     ? " border border-b-tMenuBack "
                     : "") +
@@ -42,7 +42,7 @@ import { works } from "../staticData";
                 data-min-opacity={1 - (index / (arr.length - 1)) * (1 - 0.25)}
                 style={`z-index: ${3 - index};`}
               >
-                <div class="text-8xl font-bold uppercase text-tBlack">
+                <div class="text-8xl font-bold uppercase text-tBlack text-left whitespace-nowrap">
                   {work.title}
                 </div>
                 <div class="text-xl">{work.desc}</div>

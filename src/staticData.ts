@@ -58,11 +58,15 @@ export const socialItems: {
 export enum WorkState {
   Live = "Live",
   Code = "Code",
+  NPM = "npm",
   Windows = "Windows",
   MacOs = "MacOs",
 }
 
 export enum Tool {
+  Sharp = "Sharp",
+  Glob = "glob",
+  Astro = "Astro",
   Axios = "Axios",
   Clerk = "Clerk JS",
   FramerMotion = "Framer Motion",
@@ -111,6 +115,22 @@ export const works: {
     highlighted: true,
   },
   {
+    title: "Reduse",
+    desc: "A cli tool for image conversion in a web repo. Use this to automagically convert all images in a repo to a certain format as well as fix everywhere the images were imported in your files. It will also honour your .gitIgnore rules",
+    tools: [Tool.Typescript, Tool.Glob, Tool.Sharp],
+    links: [
+      {
+        state: WorkState.NPM,
+        url: "https://www.npmjs.com/package/reduse",
+      },
+      {
+        state: WorkState.Code,
+        url: "https://github.com/tochibedford/reduse",
+      },
+    ],
+    highlighted: false,
+  },
+  {
     title: "QUERCi",
     desc: "A Desktop/Web Application for File and Music stems sharing.",
     tools: [
@@ -137,12 +157,18 @@ export const works: {
     highlighted: true,
   },
   {
-    title: "44DB Website",
-    desc: "Website done for the super producer collective 44DB.",
-    tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
+    title: "Green Thumbs",
+    desc: "This is an astro template/starter-kit for a gardening website",
+    tools: [Tool.Typescript, Tool.Astro, Tool.Tailwind, Tool.SCSS],
     links: [
-      { state: WorkState.Live, url: "https://44db.net" },
-      { state: WorkState.Code, url: "https://github.com/tochibedford/44Site" },
+      {
+        state: WorkState.Live,
+        url: "https://green-thumb-gardening.vercel.app",
+      },
+      {
+        state: WorkState.Code,
+        url: "https://github.com/tochibedford/green_thumb",
+      },
     ],
     highlighted: false,
   },
