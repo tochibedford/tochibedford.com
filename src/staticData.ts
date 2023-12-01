@@ -58,6 +58,8 @@ export const socialItems: {
 export enum WorkState {
   Live = "Live",
   Code = "Code",
+  Windows = "Windows",
+  MacOs = "MacOs",
 }
 
 export enum Tool {
@@ -110,7 +112,7 @@ export const works: {
   },
   {
     title: "QUERCi",
-    desc: "Website done for the super producer collective 44DB.",
+    desc: "A Desktop/Web Application for File and Music stems sharing.",
     tools: [
       Tool.Axios,
       Tool.Clerk,
@@ -122,8 +124,15 @@ export const works: {
       Tool.Vite,
     ],
     links: [
-      { state: WorkState.Live, url: "https://44db.net" },
-      { state: WorkState.Code, url: "https://github.com/tochibedford/44Site" },
+      { state: WorkState.Live, url: "https://querci.xyz" },
+      {
+        state: WorkState.Windows,
+        url: "https://github.com/tochibedford/querci_desktop/releases/0.2",
+      },
+      {
+        state: WorkState.MacOs,
+        url: "https://github.com/tochibedford/querci_desktop/releases/0.2",
+      },
     ],
     highlighted: true,
   },
