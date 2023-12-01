@@ -19,15 +19,83 @@ import { works } from "../staticData";
       by an insatiable curiosity, I am gradually delving deeper into
       understanding computers at a fundamental level.
     </section>
-    <section>
-      {
-        works.map((work, index) => {
-          if (index == 0) {
-            return <div class="">dd</div>;
-          }
-          return <div class="border border-t-tMenuDark">dd</div>;
-        })
-      }
+    <h2
+      class="px-32 mt-10 vina_font text-5xl py-5 text-tMenuDark sticky top-0 z-10"
+    >
+      highlights
+    </h2>
+    <section class="px-32 h-[500px] overflow-auto py-2">
+      <div id="highlightsSection" class="isolate group">
+        {
+          works.map((work, index, arr) => {
+            return (
+              <div
+                class={
+                  "highlightedWorkItem h-64 rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
+                  (index !== arr.length - 1
+                    ? " border border-b-tMenuBack "
+                    : "") +
+                  (index !== 0 ? ` -mt-56 group-hover:mt-4 ` : "")
+                }
+                data-min-scale={1 - (index / (arr.length - 1)) * (1 - 0.95)}
+                data-min-opacity={1 - (index / (arr.length - 1)) * (1 - 0.25)}
+                style={`z-index: ${3 - index};`}
+              >
+                <div class="text-8xl font-bold uppercase text-tBlack">
+                  {work.title}
+                </div>
+                <div class="text-xl">{work.desc}</div>
+                <div>
+                  Links:
+                  {work.links.map((link) => {
+                    return (
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        class="mr-2 group/link"
+                      >
+                        <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                          {link.state}
+                        </span>
+                      </a>
+                    );
+                  })}
+                </div>
+                <div class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md rounded-br-md opacity-0 group-hover:opacity-100 transition-opacity">
+                  {work.tools.join(", ")}
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
     </section>
   </main>
 </HeroLayout>
+
+<script>
+  const highlightsSection = document.getElementById("highlightsSection");
+  const workItems = document.querySelectorAll<HTMLDivElement>(
+    ".highlightedWorkItem"
+  );
+
+  const animationFrame = () => {
+    if (highlightsSection && highlightsSection?.matches(":hover")) {
+      workItems.forEach((item) => {
+        item.style.scale = "1";
+        item.style.opacity = "1";
+      });
+    } else {
+      highlightsSection?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      workItems.forEach((item) => {
+        const minScale = item.getAttribute("data-min-scale")!;
+        const minOpacity = item.getAttribute("data-min-opacity")!;
+        item.style.scale = minScale;
+        item.style.opacity = minOpacity;
+      });
+    }
+    requestAnimationFrame(animationFrame);
+  };
+
+  requestAnimationFrame(animationFrame);
+</script>

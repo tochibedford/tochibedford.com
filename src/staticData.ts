@@ -56,14 +56,19 @@ export const socialItems: {
 ];
 
 export enum WorkState {
-  Live,
-  Code,
+  Live = "Live",
+  Code = "Code",
 }
 
-export const highlightedWork = [];
-
 export enum Tool {
+  Axios = "Axios",
+  Clerk = "Clerk JS",
+  FramerMotion = "Framer Motion",
+  JSZip = "JSZip",
+  Sonner = "Sonner",
+  Tailwind = "TailwindCss",
   Typescript = "Typescript",
+  Electron = "Electron JS",
   NodeJs = "Node JS",
   Javascript = "Javascript",
   SCSS = "SCSS",
@@ -89,24 +94,47 @@ export const works: {
   title: string;
   desc: string;
   tools: Tool[];
+  links: { state: WorkState; url: string }[];
   highlighted?: boolean;
+  hide?: boolean;
 }[] = [
   {
     title: "44DB Website",
     desc: "Website done for the super producer collective 44DB.",
     tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
+    links: [
+      { state: WorkState.Live, url: "https://44db.net" },
+      { state: WorkState.Code, url: "https://github.com/tochibedford/44Site" },
+    ],
+    highlighted: true,
+  },
+  {
+    title: "QUERCi",
+    desc: "Website done for the super producer collective 44DB.",
+    tools: [
+      Tool.Axios,
+      Tool.Clerk,
+      Tool.FramerMotion,
+      Tool.Tailwind,
+      Tool.Typescript,
+      Tool.Electron,
+      Tool.NodeJs,
+      Tool.Vite,
+    ],
+    links: [
+      { state: WorkState.Live, url: "https://44db.net" },
+      { state: WorkState.Code, url: "https://github.com/tochibedford/44Site" },
+    ],
     highlighted: true,
   },
   {
     title: "44DB Website",
     desc: "Website done for the super producer collective 44DB.",
     tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
-    highlighted: true,
-  },
-  {
-    title: "44DB Website",
-    desc: "Website done for the super producer collective 44DB.",
-    tools: [Tool.Typescript, Tool.React, Tool.SanityCMS, Tool.Vite, Tool.SCSS],
+    links: [
+      { state: WorkState.Live, url: "https://44db.net" },
+      { state: WorkState.Code, url: "https://github.com/tochibedford/44Site" },
+    ],
     highlighted: false,
   },
 ];
