@@ -32,10 +32,11 @@ import { works } from "../staticData";
               <div
                 class={
                   "highlightedWorkItem h-64 rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
-                  (index !== arr.length - 1
+                  (index !== arr.length - 1 //applies to everything but last element
                     ? " border border-b-tMenuBack "
                     : "") +
-                  (index !== 0 ? ` -mt-56 group-hover:mt-4 ` : "")
+                  (index !== 0 ? ` -mt-56 group-hover:mt-4 ` : "") + //applies to everything but first element
+                  (index === 0 ? ` group isFirst ` : "") //applies to only first element
                 }
                 data-min-scale={1 - (index / (arr.length - 1)) * (1 - 0.95)}
                 data-min-opacity={1 - (index / (arr.length - 1)) * (1 - 0.25)}
@@ -49,11 +50,7 @@ import { works } from "../staticData";
                   Links:
                   {work.links.map((link) => {
                     return (
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        class="mr-2 group/link"
-                      >
+                      <a href={link.url} target="_blank" class="group/link">
                         <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
                           {link.state}
                         </span>
@@ -61,7 +58,7 @@ import { works } from "../staticData";
                     );
                   })}
                 </div>
-                <div class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md rounded-br-md opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md rounded-br-md opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity">
                   {work.tools.join(", ")}
                 </div>
               </div>
