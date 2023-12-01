@@ -4,8 +4,8 @@ import { works } from "../staticData";
 ---
 
 <HeroLayout>
-  <main class="p-10 md:px-32 text-justify ubuntu_mono_font">
-    <section class="px-16 text-xl">
+  <main class="py-10 sm:px-10 sm:p-10 text-justify ubuntu_mono_font">
+    <section class="px-2 lg:px-16 md:px-8 text-xl">
       <div class="w-16 h-16 overflow-hidden rounded-md float-left my-1 mr-2">
         <img src="/tochi.jpg" alt="profile image" class="saturate-0" />
       </div>
@@ -21,29 +21,35 @@ import { works } from "../staticData";
       check out my highlights below.
     </section>
     <h2
-      class="px-32 mt-10 vina_font text-5xl py-5 text-tMenuDark sticky top-0 z-10"
+      class="lg:px-8 md:px-0 text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
     >
       highlights
     </h2>
-    <section class="px-32 h-[500px] overflow-auto py-2">
+    <section
+      class="lg:px-8 md:px-0 px-2 h-[500px] overflow-auto py-2 text-left"
+    >
       <div id="highlightsSection" class="isolate group">
         {
           works.map((work, index, arr) => {
             return (
               <div
                 class={
-                  "highlightedWorkItem min-h-64 rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
+                  "highlightedWorkItem min-h-[16rem] rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
                   (index !== arr.length - 1 //applies to everything but last element
                     ? " border border-b-tMenuBack "
                     : "") +
-                  (index !== 0 ? ` -mt-56 group-hover:mt-4 ` : "") + //applies to everything but first element
+                  (index !== 0
+                    ? ` -mt-56 md:-mt-48 lg:-mt-56 group-hover:mt-4 `
+                    : "") + //applies to everything but first element
                   (index === 0 ? ` group isFirst ` : "") //applies to only first element
                 }
                 data-min-scale={1 - (index / (arr.length - 1)) * (1 - 0.95)}
-                data-min-opacity={1 - (index / (arr.length - 1)) * (1 - 0.25)}
+                data-min-opacity={
+                  index < 3 ? 1 - (index / (arr.length - 1)) * (1 - 0.25) : 0
+                }
                 style={`z-index: ${3 - index};`}
               >
-                <div class="text-8xl font-bold uppercase text-tBlack text-left whitespace-nowrap">
+                <div class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap">
                   {work.title}
                 </div>
                 <div class="text-xl">{work.desc}</div>
@@ -68,6 +74,9 @@ import { works } from "../staticData";
         }
       </div>
     </section>
+    <section>
+      <h2>Interests</h2>
+    </section>
   </main>
 </HeroLayout>
 
@@ -82,14 +91,18 @@ import { works } from "../staticData";
       workItems.forEach((item) => {
         item.style.scale = "1";
         item.style.opacity = "1";
+        item.style.height = "auto";
       });
     } else {
-      if (highlightsSection?.scrollTop !== 0) {
-        highlightsSection?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-      }
+      highlightsSection?.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
       workItems.forEach((item) => {
         const minScale = item.getAttribute("data-min-scale")!;
         const minOpacity = item.getAttribute("data-min-opacity")!;
+        item.style.height = "16rem";
         item.style.scale = minScale;
         item.style.opacity = minOpacity;
       });

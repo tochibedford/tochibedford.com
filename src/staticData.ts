@@ -118,22 +118,7 @@ export const works: {
     ],
     highlighted: true,
   },
-  {
-    title: "Reduse",
-    desc: "A cli tool for image conversion in a web repo. Use this to automagically convert all images in a repo to a certain format as well as fix everywhere the images were imported in your files. It will also honour your .gitIgnore rules",
-    tools: [Tool.Typescript, Tool.Glob, Tool.Sharp],
-    links: [
-      {
-        state: WorkState.NPM,
-        url: "https://www.npmjs.com/package/reduse",
-      },
-      {
-        state: WorkState.Code,
-        url: "https://github.com/tochibedford/reduse",
-      },
-    ],
-    highlighted: false,
-  },
+
   {
     title: "QUERCi",
     desc: "A Desktop/Web Application for File and Music stems sharing.",
@@ -144,7 +129,6 @@ export const works: {
       Tool.Tailwind,
       Tool.Typescript,
       Tool.Electron,
-      Tool.NodeJs,
       Tool.Vite,
     ],
     links: [
@@ -172,6 +156,22 @@ export const works: {
       {
         state: WorkState.Code,
         url: "https://github.com/tochibedford/green_thumb",
+      },
+    ],
+    highlighted: false,
+  },
+  {
+    title: "Reduse",
+    desc: "A cli tool for image conversion in a web repo. Use this to automagically convert all images in a repo to a certain format as well as fix everywhere the images were imported in your files. It will also honour your .gitIgnore rules",
+    tools: [Tool.Typescript, Tool.Glob, Tool.Sharp],
+    links: [
+      {
+        state: WorkState.NPM,
+        url: "https://www.npmjs.com/package/reduse",
+      },
+      {
+        state: WorkState.Code,
+        url: "https://github.com/tochibedford/reduse",
       },
     ],
     highlighted: false,
