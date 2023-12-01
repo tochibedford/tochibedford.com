@@ -1,0 +1,77 @@
+---
+
+---
+
+<div class="w-full h-80 rounded-lg overflow-hidden" id="matterContainer"></div>
+
+<script>
+  import { Engine, Render, Runner, Bodies, Composite } from "matter-js";
+  const container = document.querySelector<HTMLDivElement>("#matterContainer")!;
+  const engine = Engine.create();
+  const render = Render.create({
+    element: container,
+    engine: engine,
+    options: {
+      width: container.clientWidth,
+      height: container.clientHeight,
+      background: "#EEECEC",
+      wireframes: false,
+    },
+    bounds: {
+      max: {
+        x: container.clientWidth,
+        y: container.clientHeight,
+      },
+      min: {
+        x: 0,
+        y: 0,
+      },
+    },
+  });
+
+  const boxA = Bodies.rectangle(400, 200, 80, 80, {
+    render: {
+      fillStyle: "transparent",
+      strokeStyle: "#69636D",
+      lineWidth: 1,
+    },
+  });
+  const boxB = Bodies.rectangle(450, 50, 80, 80, {
+    render: {
+      fillStyle: "transparent",
+      strokeStyle: "#69636D",
+      lineWidth: 1,
+    },
+  });
+  const ground = Bodies.rectangle(
+    container.clientWidth / 2,
+    container.clientHeight - 30,
+    container.clientWidth,
+    60,
+    {
+      isStatic: true,
+      render: {
+        fillStyle: "transparent",
+        strokeStyle: "#69636D",
+        lineWidth: 1,
+      },
+    }
+  );
+
+  Composite.add(engine.world, [boxA, boxB, ground]);
+
+  Render.run(render);
+
+  const runner = Runner.create();
+  Runner.run(runner, engine);
+
+  window.addEventListener("resize", () => {
+    render.bounds.max.x = container.clientWidth;
+    render.bounds.max.y = container.clientHeight;
+    render.options.width = container.clientWidth;
+    render.options.height = container.clientHeight;
+    render.canvas.width = container.clientWidth;
+    render.canvas.height = container.clientHeight;
+    Render.setPixelRatio(render, window.devicePixelRatio); // added this
+  });
+</script>
