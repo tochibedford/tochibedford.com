@@ -1,3 +1,7 @@
+/**
+ * 📂 Who has time for a database or CMS anyway?
+ */
+
 import githubIcon from "./components/assets/github.svg";
 import twitterIcon from "./components/assets/twitter.svg";
 import instagramIcon from "./components/assets/instagram.svg";
