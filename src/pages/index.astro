@@ -10,7 +10,7 @@ import { works } from "../staticData";
         <img src="/tochi.jpg" alt="profile image" class="saturate-0" />
       </div>
        I am a developer based in Lagos, Nigeria working on web apps, tools and
-      services for consumers and other developers like my self. I am an
+      services for everyday consumers and other developers like myself. I am an
       open-source contrbutor, especially when it comes to to <a
         class="font-bold underline"
         href="/tools">tools I use</a
@@ -21,54 +21,91 @@ import { works } from "../staticData";
       check out my highlights below.
     </section>
     <h2
-      class="lg:px-8 md:px-0 text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
+      class="lg:px-8 md:px-0 md:text-left text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
     >
       highlights
     </h2>
     <section
-      class="lg:px-8 md:px-0 px-2 h-[500px] overflow-auto py-2 text-left"
+      class="lg:px-8 md:px-0 px-2 sm:h-[500px] overflow-auto py-2 text-left"
     >
       <div id="highlightsSection" class="isolate group">
         {
           works.map((work, index, arr) => {
             return (
-              <div
-                class={
-                  "highlightedWorkItem min-h-[16rem] rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 flex flex-col gap-3" +
-                  (index !== arr.length - 1 //applies to everything but last element
-                    ? " border border-b-tMenuBack "
-                    : "") +
-                  (index !== 0
-                    ? ` -mt-56 md:-mt-48 lg:-mt-56 group-hover:mt-4 `
-                    : "") + //applies to everything but first element
-                  (index === 0 ? ` group isFirst ` : "") //applies to only first element
-                }
-                data-min-scale={1 - (index / (arr.length - 1)) * (1 - 0.95)}
-                data-min-opacity={
-                  index < 3 ? 1 - (index / (arr.length - 1)) * (1 - 0.25) : 0
-                }
-                style={`z-index: ${3 - index};`}
-              >
-                <div class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap">
-                  {work.title}
+              <>
+                <div
+                  class={
+                    "hidden overflow-hidden highlightedWorkItem min-h-[16rem] rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 sm:flex flex-col gap-3 " +
+                    (index !== arr.length - 1 //applies to everything but last element
+                      ? " border border-b-tMenuBack "
+                      : "") +
+                    (index !== 0
+                      ? ` sm:-mt-56 lg:-mt-56 group-hover:mt-4 `
+                      : "") + //applies to everything but first element
+                    (index === 0 ? ` group isFirst ` : "") //applies to only first element
+                  }
+                  data-min-scale={1 - (index / (arr.length - 1)) * (1 - 0.95)}
+                  data-min-opacity={
+                    index < 3 ? 1 - (index / (arr.length - 1)) * (1 - 0.25) : 0
+                  }
+                  style={`z-index: ${3 - index};`}
+                >
+                  <div class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap">
+                    {work.title}
+                  </div>
+                  <div class="text-xl">{work.desc}</div>
+                  <div>
+                    Links:
+                    {work.links.map((link) => {
+                      return (
+                        <a href={link.url} target="_blank" class="group/link">
+                          <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                            {link.state}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                  <div class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity">
+                    {work.tools.join(", ")}
+                  </div>
                 </div>
-                <div class="text-xl">{work.desc}</div>
-                <div>
-                  Links:
-                  {work.links.map((link) => {
-                    return (
-                      <a href={link.url} target="_blank" class="group/link">
-                        <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
-                          {link.state}
-                        </span>
-                      </a>
-                    );
-                  })}
+
+                {/**phone screens*/}
+                <div
+                  class={
+                    "overflow-hidden min-h-[16rem] rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-5 sm:hidden flex-col gap-3 " +
+                    (index !== arr.length - 1 //applies to everything but last element
+                      ? " border border-b-tMenuBack "
+                      : "") +
+                    (index !== 0
+                      ? ` sm:-mt-56 lg:-mt-56 sm:group-hover:mt-4 mt-4 `
+                      : "") + //applies to everything but first element
+                    (index === 0 ? ` group isFirst ` : "") //applies to only first element
+                  }
+                  style={`z-index: ${3 - index};`}
+                >
+                  <div class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap">
+                    {work.title}
+                  </div>
+                  <div class="text-xl">{work.desc}</div>
+                  <div>
+                    Links:
+                    {work.links.map((link) => {
+                      return (
+                        <a href={link.url} target="_blank" class="group/link">
+                          <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                            {link.state}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                  <div class="absolute bottom-0 right-0 p-1 bg-tBlack text-tWhite text-xs rounded-tl-md sm:opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity">
+                    {work.tools.join(", ")}
+                  </div>
                 </div>
-                <div class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md rounded-br-md opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity">
-                  {work.tools.join(", ")}
-                </div>
-              </div>
+              </>
             );
           })
         }
@@ -76,7 +113,7 @@ import { works } from "../staticData";
     </section>
     <section>
       <h2
-        class="lg:px-8 md:px-0 text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
+        class="lg:px-8 md:px-0 md:text-left text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
       >
         INTERESTS
       </h2>
