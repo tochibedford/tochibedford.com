@@ -84,7 +84,9 @@ import { works } from "../staticData";
         item.style.opacity = "1";
       });
     } else {
-      highlightsSection?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      if (highlightsSection?.scrollTop !== 0) {
+        highlightsSection?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }
       workItems.forEach((item) => {
         const minScale = item.getAttribute("data-min-scale")!;
         const minOpacity = item.getAttribute("data-min-opacity")!;
