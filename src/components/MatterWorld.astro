@@ -214,7 +214,10 @@
     render.options.height = container.clientHeight;
     render.canvas.width = container.clientWidth;
     render.canvas.height = container.clientHeight;
-    Render.setPixelRatio(render, window.devicePixelRatio);
+    /**
+     * setPixelRatio causes mobile screen touch offset for some reason
+     * */
+    // Render.setPixelRatio(render, window.devicePixelRatio) ;
 
     const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
     Composite.remove(engine.world, cloth);
