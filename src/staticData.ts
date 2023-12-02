@@ -14,6 +14,12 @@ export const navMenuItems: {
   isExternal: boolean;
 }[] = [
   {
+    idName: "home",
+    displayName: "Home",
+    link: "/",
+    isExternal: false,
+  },
+  {
     idName: "articles",
     displayName: "Articles",
     link: "/articles",

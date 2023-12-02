@@ -4,58 +4,93 @@ import menuIcon from "./assets/menu.svg";
 import closeIcon from "./assets/close.svg";
 ---
 
-<nav
-  class="bg-tMenuBack p-2 rounded-lg h-16 flex items-center gap-2 drop-shadow-[7px_7px_0px_#2225]"
->
-  <button
-    class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md"
-    id="menuBurgerContainer"
-  >
-    <div class="w-5 h-5 overflow-hidden flex relative pointer-events-none">
-      <img
-        id="burger"
-        src={menuIcon.src}
-        alt="burger menu"
-        class={"w-5 h-5 group-hover:scale-90 transition-transform absolute left-0"}
-      />
-      <img
-        id="close"
-        src={closeIcon.src}
-        alt="burger menu"
-        class={"w-5 h-5 group-hover:scale-90 transition-transform translate-x-full absolute left-0"}
-      />
-    </div>
-  </button>
-  {
-    socialItems.map((social) => (
-      <a
-        class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md cursor-pointer"
-        target="_blank"
-        href={social.link}
-      >
+<nav class="relative drop-shadow-[7px_7px_0px_#2225]">
+  <div class="bg-tMenuBack p-2 rounded-lg h-16 flex items-center gap-2">
+    <button
+      class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md"
+      id="menuBurgerContainer"
+    >
+      <div class="w-5 h-5 overflow-hidden flex relative pointer-events-none">
         <img
-          src={social.image.src}
+          id="burger"
+          src={menuIcon.src}
           alt="burger menu"
-          class="w-full h-full group-hover:scale-90 transition-transform"
+          class={"w-5 h-5 group-hover:scale-90 transition-transform absolute left-0"}
         />
-      </a>
-    ))
-  }
+        <img
+          id="close"
+          src={closeIcon.src}
+          alt="burger menu"
+          class={"w-5 h-5 group-hover:scale-90 transition-transform translate-x-full absolute left-0"}
+        />
+      </div>
+    </button>
+    {
+      socialItems.map((social) => (
+        <a
+          class="group h-full grid place-items-center w-12 bg-tMenuItemBack rounded-md cursor-pointer"
+          target="_blank"
+          href={social.link}
+        >
+          <img
+            src={social.image.src}
+            alt="burger menu"
+            class="w-full h-full group-hover:scale-90 transition-transform"
+          />
+        </a>
+      ))
+    }
+  </div>
+  <ul
+    id="menuListContainer"
+    class="absolute rounded-lg bottom-[10px] clip origin-bottom-left left-[10px] [clip-path:polygon(0%_100%,0%_100%,0%_100%,0%_100%)] w-[110%] pb-24 pt-5 transition-all bg-tMenuItemBack -z-10 ubuntu_mono_font duration-700"
+  >
+    {
+      navMenuItems.map((item, index) => {
+        return (
+          <li
+            class={
+              "text-2xl transition-colors hover:bg-tMenuBack cursor-pointer  " +
+              (index !== navMenuItems.length - 1
+                ? " border-b-2 border-tMenuBack "
+                : "")
+            }
+          >
+            <a href={item.link} class="py-2 px-5 w-full h-full inline-block">
+              {item.displayName}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
 </nav>
 
 <script>
-  const menuBurgerContainerEl = document.getElementById("menuBurgerContainer");
-  const burgerEl = document.getElementById("burger");
-  const closeEl = document.getElementById("close");
+  const menuBurgerContainerEl = document.getElementById("menuBurgerContainer")!;
+  const burgerEl = document.getElementById("burger")!;
+  const closeEl = document.getElementById("close")!;
+
+  const menuListContainer = document.getElementById("menuListContainer")!;
   let menuOpen = false;
 
-  menuBurgerContainerEl?.addEventListener("click", () => {
-    if (!menuOpen && burgerEl && closeEl) {
+  menuBurgerContainerEl.addEventListener("click", () => {
+    console.log(menuOpen);
+    if (!menuOpen) {
       burgerEl.style.transform = "translate(-100%, 0%)";
       closeEl.style.transform = "translate(0%, 0%)";
-    } else if (menuOpen && burgerEl && closeEl) {
+      menuListContainer.style.bottom = "-10px";
+      menuListContainer.style.left = "-5%";
+      menuListContainer.style.clipPath =
+        "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+    } else {
       closeEl.style.transform = "translate(100%, 0%)";
       burgerEl.style.transform = "translate(0%, 0%)";
+
+      menuListContainer.style.bottom = "10px";
+      menuListContainer.style.left = "10px";
+      menuListContainer.style.clipPath =
+        "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
     }
     menuOpen = !menuOpen;
   });
