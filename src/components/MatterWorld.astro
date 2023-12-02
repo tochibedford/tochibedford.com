@@ -96,8 +96,8 @@
   const rows = Math.ceil(container.clientHeight / boxWidth) + 2;
   console.log(cols, rows);
   const cloth = compCloth(
-    -radius,
-    -radius,
+    -radius * 2,
+    -radius * 2,
     cols,
     rows,
     columnGap,
@@ -155,7 +155,7 @@
         stiffness: 0.6,
         render: {
           type: "line",
-          lineWidth: 1,
+          lineWidth: 0,
           anchors: false,
           strokeStyle: "#232124",
           background: "blue",
@@ -173,7 +173,7 @@
       rowGap,
       function (x: number, y: number) {
         const randomHSLColor = `hsl(${360 * Math.random()} , 0%, ${
-          40 + Math.random() * 50
+          60 + Math.random() * 30
         }%)`;
         particleOptions = Common.extend(
           {
