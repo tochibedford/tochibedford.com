@@ -78,24 +78,18 @@
   const runner = Runner.create();
   Runner.run(runner, engine);
 
-  window.addEventListener("resize", () => {
-    render.bounds.max.x = container.clientWidth;
-    render.bounds.max.y = container.clientHeight;
-    render.options.width = container.clientWidth;
-    render.options.height = container.clientHeight;
-    render.canvas.width = container.clientWidth;
-    render.canvas.height = container.clientHeight;
-    Render.setPixelRatio(render, window.devicePixelRatio); // added this
-  });
-
-  const radius = 15;
-  const columnGap = 10;
-  const rowGap = 10;
-  const boxWidth = columnGap + radius * 2;
-  const cols = Math.ceil(container.clientWidth / boxWidth) + 2;
-  const rows = Math.ceil(container.clientHeight / boxWidth) + 2;
-  console.log(cols, rows);
-  const cloth = compCloth(
+  function calculateMeshValues() {
+    const radius = 15;
+    const columnGap = 10;
+    const rowGap = 10;
+    const boxWidth = columnGap + radius * 2;
+    const cols = Math.ceil(container.clientWidth / boxWidth) + 2;
+    const rows = Math.ceil(container.clientHeight / boxWidth) + 2;
+    console.log(cols, rows);
+    return { radius, columnGap, rowGap, boxWidth, cols, rows };
+  }
+  const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
+  let cloth = compCloth(
     -radius * 2,
     -radius * 2,
     cols,
@@ -105,19 +99,8 @@
     false,
     radius
   );
-  for (let i = 0; i < cols; i++) {
-    cloth.bodies[i].isStatic = true;
-  }
-  for (let i = 0; i < cols * rows; i++) {
-    if (i % cols == 0) {
-      cloth.bodies[i].isStatic = true;
-      cloth.bodies[i + cols - 1].isStatic = true;
-    }
-  }
-  for (let i = cols * rows - cols; i < cols * rows; i++) {
-    cloth.bodies[i].isStatic = true;
-  }
-  Composite.add(engine.world, [cloth]);
+
+  Composite.add(engine.world, cloth);
 
   const mouse = Mouse.create(render.canvas),
     mouseConstraint = MouseConstraint.create(engine, {
@@ -152,7 +135,7 @@
 
     constraintOptions = Common.extend(
       {
-        stiffness: 0.6,
+        stiffness: 1,
         render: {
           type: "line",
           lineWidth: 0,
@@ -164,7 +147,7 @@
       false
     );
 
-    var cloth = Composites.stack(
+    let cloth = Composites.stack(
       xx,
       yy,
       columns,
@@ -192,6 +175,17 @@
 
     cloth.label = "Cloth Body";
 
+    for (let i = 0; i < columns; i++) {
+      cloth.bodies[i].isStatic = true;
+    }
+    for (let i = 0; i < columns * rows - 1; i += columns) {
+      cloth.bodies[i].isStatic = true;
+      cloth.bodies[i + columns - 1].isStatic = true;
+    }
+    for (let i = columns * rows - columns; i < columns * rows; i++) {
+      cloth.bodies[i].isStatic = true;
+    }
+
     return cloth;
   }
 
@@ -209,4 +203,28 @@
     "mousewheel",
     (mouse as any).mousewheel
   );
+
+  window.addEventListener("resize", () => {
+    render.bounds.max.x = container.clientWidth;
+    render.bounds.max.y = container.clientHeight;
+    render.options.width = container.clientWidth;
+    render.options.height = container.clientHeight;
+    render.canvas.width = container.clientWidth;
+    render.canvas.height = container.clientHeight;
+    Render.setPixelRatio(render, window.devicePixelRatio);
+
+    const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
+    Composite.remove(engine.world, cloth);
+    cloth = compCloth(
+      -radius * 2,
+      -radius * 2,
+      cols,
+      rows,
+      columnGap,
+      rowGap,
+      false,
+      radius
+    );
+    Composite.add(engine.world, cloth);
+  });
 </script>
