@@ -114,18 +114,49 @@ import { works } from "../staticData";
     <section class="lg:px-8 md:px-0 px-2 pt-5 relative">
       <MatterWorld />
       <div
-        class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-center"
+        id="nunText"
+        class="uppsercase opacity-0 pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-center"
       >
         NUN' TOO MUCH
       </div>
-    </section>
-    <section>
-      <h2
-        class="lg:px-8 md:px-0 md:text-left text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
+      <div
+        id="hitMeUpText"
+        class="opacity-0 uppercase pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-center"
       >
-        INTERESTS
-      </h2>
-      <p>Nun' too much</p>
+        Hit Me Up
+      </div>
+      <div
+        aria-label="tochibedford.work@gmail.com"
+        id="emailText"
+        class="opacity-0 pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-center"
+      >
+        tochibedford.work[at]gmail.com
+      </div>
+      <div
+        aria-label="tochibedford.work@gmail.com"
+        id="emailText"
+        class="pointer-events-none animate-bounce absolute bottom-20 left-1/2 -translate-x-1/2 text-5xl font-bold text-center"
+      >
+        <span class="rotate-180 inline-block text-5xl font-normal">^</span>
+      </div>
+      <div class="w-max mt-5 mx-auto">
+        <button
+          class="p-2 text-2xl border-tBlack border rounded-lg hover:scale-95 transition-transform relative"
+          id="copyButton"
+        >
+          <span id="copyText" class="inline-block">Copy E-mail</span>
+          <span
+            id="okText"
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none inline-block opacity-0"
+            >✅</span
+          >
+        </button>
+        <a
+          href="mailto:tochibedford.work@gmail.com?subject=Hey👋🏽"
+          class="inline-block p-2 text-2xl border-tBlack border bg-tBlack text-tWhite rounded-lg hover:scale-95 transition-transform"
+          id="sendButton">Send E-mail</a
+        >
+      </div>
     </section>
   </main>
 </HeroLayout>
@@ -160,4 +191,85 @@ import { works } from "../staticData";
     requestAnimationFrame(animationFrame);
   };
   requestAnimationFrame(animationFrame);
+</script>
+
+<script>
+  import { gsap } from "gsap";
+  import ScrollTrigger from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#nunText",
+    },
+  });
+  tl.fromTo(
+    "#nunText",
+    { x: -50, opacity: 0, delay: 1 },
+    {
+      y: -50,
+      opacity: 0,
+      delay: 3,
+    }
+  ).from(".hitMeUpText", {
+    y: -50,
+    opacity: 0,
+    delay: 3,
+  });
+</script>
+
+<script>
+  import { gsap } from "gsap";
+  const copyButtonClicked = gsap.timeline({
+    onComplete: () => {
+      copyButton.disabled = true;
+    },
+    onReverseComplete: () => {
+      copyButton.disabled = false;
+    },
+  });
+
+  const copyButton = document.querySelector<HTMLButtonElement>("#copyButton")!;
+  const copyText = document.querySelector<HTMLButtonElement>("#copyText")!;
+  const okText = document.querySelector<HTMLButtonElement>("#okText")!;
+  copyButtonClicked
+    .to(copyText, {
+      y: -20,
+      opacity: 0,
+      duration: 0.1,
+      ease: "expo.inOut",
+      onComplete: () => {
+        copyText.hidden = true;
+      },
+    })
+    .fromTo(
+      okText,
+      {
+        y: 20,
+        ease: "expo.inOut",
+      },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.1,
+        ease: "expo.inOut",
+        onReverseComplete: () => {
+          copyText.hidden = false;
+        },
+      }
+    )
+    .pause();
+  copyButton.onclick = () => {
+    navigator.clipboard
+      .writeText("tochibedford.work@gmail.com")
+      .then(() => {
+        copyButtonClicked.play();
+        setTimeout(() => {
+          copyButtonClicked.reverse();
+        }, 3000);
+      })
+      .catch((res) => {
+        console.error(res);
+      });
+  };
 </script>
