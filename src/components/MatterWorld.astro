@@ -89,7 +89,6 @@
     const boxWidth = columnGap + radius * 2;
     const cols = Math.ceil(container.clientWidth / boxWidth) + 2;
     const rows = Math.ceil(container.clientHeight / boxWidth) + 2;
-    console.log(cols, rows);
     return { radius, columnGap, rowGap, boxWidth, cols, rows };
   }
   const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
