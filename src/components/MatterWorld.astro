@@ -5,7 +5,20 @@
 <div class="w-full h-80 rounded-lg overflow-hidden" id="matterContainer"></div>
 
 <script>
-  import { Engine, Render, Runner, Bodies, Composite } from "matter-js";
+  import {
+    Engine,
+    Render,
+    Runner,
+    Body,
+    Bodies,
+    Common,
+    Composite,
+    Composites,
+    Mouse,
+    MouseConstraint,
+    Events,
+  } from "matter-js";
+  import type { IBodyDefinition } from "matter-js";
   const container = document.querySelector<HTMLDivElement>("#matterContainer")!;
   const engine = Engine.create();
   const render = Render.create({
@@ -58,7 +71,7 @@
     }
   );
 
-  Composite.add(engine.world, [boxA, boxB, ground]);
+  Composite.add(engine.world, []);
 
   Render.run(render);
 
@@ -73,5 +86,100 @@
     render.canvas.width = container.clientWidth;
     render.canvas.height = container.clientHeight;
     Render.setPixelRatio(render, window.devicePixelRatio); // added this
+  });
+
+  const cloth = compCloth(-10, -10, 40, 24, 21, 10, false, 10);
+  for (let i = 0; i < 40; i++) {
+    cloth.bodies[i].isStatic = true;
+  }
+  for (let i = 0; i < 40 * 24; i++) {
+    if (i % 40 == 0) {
+      cloth.bodies[i].isStatic = true;
+      cloth.bodies[i + 39].isStatic = true;
+    }
+  }
+  for (let i = 40 * 24 - 40; i < 40 * 24; i++) {
+    cloth.bodies[i].isStatic = true;
+  }
+  Composite.add(engine.world, [cloth]);
+
+  const mouse = Mouse.create(render.canvas),
+    mouseConstraint = MouseConstraint.create(engine, {
+      mouse: mouse,
+      constraint: {
+        stiffness: 0.98,
+        render: {
+          visible: false,
+        },
+      },
+    });
+  Composite.add(engine.world, mouseConstraint);
+  render.mouse = mouse;
+  Render.lookAt(render, {
+    min: { x: 0, y: 0 },
+    max: { x: container.clientWidth, y: container.clientHeight },
+  });
+
+  function compCloth(
+    xx: number,
+    yy: number,
+    columns: number,
+    rows: number,
+    columnGap: number,
+    rowGap: number,
+    crossBrace: boolean,
+    particleRadius: number,
+    particleOptions?: IBodyDefinition,
+    constraintOptions?: boolean
+  ) {
+    var group = Body.nextGroup(true);
+    particleOptions = Common.extend(
+      {
+        inertia: Infinity,
+        friction: 0.00001,
+        collisionFilter: { group: group },
+        render: { visible: false },
+      },
+      false
+    );
+    constraintOptions = Common.extend(
+      {
+        stiffness: 1.1,
+        render: {
+          type: "line",
+          lineWidth: 1,
+          anchors: false,
+          strokeStyle: "#232124",
+          background: "blue",
+        },
+      },
+      false
+    );
+
+    var cloth = Composites.stack(
+      xx,
+      yy,
+      columns,
+      rows,
+      columnGap,
+      rowGap,
+      function (x: number, y: number) {
+        return Bodies.circle(x, y, particleRadius, particleOptions);
+      }
+    );
+
+    Composites.mesh(cloth, columns, rows, crossBrace, constraintOptions);
+
+    cloth.label = "Cloth Body";
+
+    return cloth;
+  }
+
+  container.addEventListener("mouseleave", () => {
+    console.log("leave");
+    Events.trigger(mouseConstraint, "mouseup", {
+      mouse: mouseConstraint.mouse,
+      body: Composite.allBodies(engine.world)[0],
+    });
   });
 </script>
