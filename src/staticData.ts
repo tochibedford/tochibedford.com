@@ -12,30 +12,35 @@ export const navMenuItems: {
   displayName: string;
   link: string;
   isExternal: boolean;
+  released: boolean;
 }[] = [
   {
     idName: "home",
     displayName: "Home",
     link: "/",
     isExternal: false,
+    released: true,
   },
   {
     idName: "articles",
     displayName: "Articles",
     link: "/articles",
     isExternal: false,
+    released: false,
   },
   {
     idName: "resume",
     displayName: "Resume",
     link: "/resume",
     isExternal: false,
+    released: true,
   },
   {
     idName: "experiments",
     displayName: "Experiments",
     link: "/experiments",
     isExternal: false,
+    released: true,
   },
 ];
 
