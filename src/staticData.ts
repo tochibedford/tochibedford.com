@@ -22,6 +22,13 @@ export const navMenuItems: {
     released: true,
   },
   {
+    idName: "tools",
+    displayName: "Tools",
+    link: "/tools",
+    isExternal: false,
+    released: true,
+  },
+  {
     idName: "articles",
     displayName: "Articles",
     link: "/articles",
@@ -130,7 +137,6 @@ export const works: {
     ],
     highlighted: true,
   },
-
   {
     title: "QUERCi",
     desc: "A Desktop/Web Application for File and Music stems sharing.",

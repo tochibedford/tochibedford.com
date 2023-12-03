@@ -4,6 +4,7 @@ import "@fontsource/vina-sans";
 import "@fontsource/ubuntu-mono";
 import Navbar from "../components/Navbar.astro";
 import MetaData from "../components/MetaData.astro";
+import { ViewTransitions } from "astro:transitions";
 ---
 
 <html lang="en" class="min-h-screen">
@@ -14,6 +15,7 @@ import MetaData from "../components/MetaData.astro";
     <meta name="generator" content={Astro.generator} />
     <MetaData />
     <title>tochi bedford | dev</title>
+    <ViewTransitions />
   </head>
   <body
     class="min-h-screen bg-tOffWhite selection:bg-tHighlight selection:text-tOffWhite"
@@ -27,22 +29,23 @@ import MetaData from "../components/MetaData.astro";
     <section class="sticky bottom-2 flex py-2 justify-center">
       <Navbar />
     </section>
-  </body><style is:global>
-    .vina_font {
-      font-family: "Vina Sans", sans-serif;
-    }
-    .ubuntu_mono_font {
-      font-family: "Ubuntu Mono", sans-serif;
-    }
+    <style is:global>
+      .vina_font {
+        font-family: "Vina Sans", sans-serif;
+      }
+      .ubuntu_mono_font {
+        font-family: "Ubuntu Mono", sans-serif;
+      }
 
-    ::-webkit-scrollbar {
-      width: 5px;
-      background: transparent;
-    }
+      ::-webkit-scrollbar {
+        width: 5px;
+        background: transparent;
+      }
 
-    ::-webkit-scrollbar-thumb {
-      background: #69636d;
-      border-radius: 9px;
-    }
-  </style>
+      ::-webkit-scrollbar-thumb {
+        background: #69636d;
+        border-radius: 9px;
+      }
+    </style>
+  </body>
 </html>

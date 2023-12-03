@@ -72,31 +72,37 @@ import closeIcon from "./assets/close.svg";
 </nav>
 
 <script>
-  const menuBurgerContainerEl = document.getElementById("menuBurgerContainer")!;
-  const burgerEl = document.getElementById("burger")!;
-  const closeEl = document.getElementById("close")!;
+  function handleMenu() {
+    const menuBurgerContainerEl = document.getElementById(
+      "menuBurgerContainer"
+    )!;
+    const burgerEl = document.getElementById("burger")!;
+    const closeEl = document.getElementById("close")!;
 
-  const menuListContainer = document.getElementById("menuListContainer")!;
-  let menuOpen = false;
+    const menuListContainer = document.getElementById("menuListContainer")!;
+    let menuOpen = false;
 
-  menuBurgerContainerEl.addEventListener("click", () => {
-    console.log(menuOpen);
-    if (!menuOpen) {
-      burgerEl.style.transform = "translate(-100%, 0%)";
-      closeEl.style.transform = "translate(0%, 0%)";
-      menuListContainer.style.bottom = "-10px";
-      menuListContainer.style.left = "-5%";
-      menuListContainer.style.clipPath =
-        "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
-    } else {
-      closeEl.style.transform = "translate(100%, 0%)";
-      burgerEl.style.transform = "translate(0%, 0%)";
+    menuBurgerContainerEl.addEventListener("click", () => {
+      console.log(menuOpen);
+      if (!menuOpen) {
+        burgerEl.style.transform = "translate(-100%, 0%)";
+        closeEl.style.transform = "translate(0%, 0%)";
+        menuListContainer.style.bottom = "-10px";
+        menuListContainer.style.left = "-5%";
+        menuListContainer.style.clipPath =
+          "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+      } else {
+        closeEl.style.transform = "translate(100%, 0%)";
+        burgerEl.style.transform = "translate(0%, 0%)";
 
-      menuListContainer.style.bottom = "10px";
-      menuListContainer.style.left = "10px";
-      menuListContainer.style.clipPath =
-        "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
-    }
-    menuOpen = !menuOpen;
-  });
+        menuListContainer.style.bottom = "10px";
+        menuListContainer.style.left = "10px";
+        menuListContainer.style.clipPath =
+          "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
+      }
+      menuOpen = !menuOpen;
+    });
+  }
+  handleMenu();
+  document.addEventListener("astro:page-load", handleMenu);
 </script>
