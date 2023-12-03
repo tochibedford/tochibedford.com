@@ -50,14 +50,19 @@ import closeIcon from "./assets/close.svg";
         return (
           <li
             class={
-              "text-2xl transition-colors hover:bg-tMenuBack cursor-pointer  " +
+              "text-2xl transition-colors  " +
               (index !== navMenuItems.length - 1
                 ? " border-b-2 border-tMenuBack "
-                : "")
+                : "") +
+              (item.released ? " hover:bg-tMenuBack " : " opacity-40 ")
             }
           >
-            <a href={item.link} class="py-2 px-5 w-full h-full inline-block">
-              {item.displayName}
+            <a
+              href={item.released ? item.link : undefined}
+              class="py-2 px-5 w-full h-full inline-block"
+            >
+              {item.displayName}{" "}
+              {!item.released && <div class="text-sm">(*coming soon)</div>}
             </a>
           </li>
         );

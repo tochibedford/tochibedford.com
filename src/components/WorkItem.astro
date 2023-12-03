@@ -1,1 +1,122 @@
-<div></div>
+---
+import type { works } from "../staticData";
+
+interface Props {
+  work: (typeof works)[number];
+  index: number;
+  arr: typeof works;
+}
+const { work, index, arr } = Astro.props;
+---
+
+<>
+  <div
+    tabindex="0"
+    class={"hidden overflow-hidden highlightedWorkItem min-h-[16rem] rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-10 sm:flex flex-col gap-3 " +
+      (index !== arr.length - 1 //applies to everything but last element
+        ? " border border-b-tMenuBack "
+        : "") +
+      (index !== 0 ? ` sm:-mt-56 lg:-mt-56 group-hover:mt-4 ` : "") + //applies to everything but first element
+      (index === 0 ? ` group isFirst ` : "")}
+    data-min-scale={1 - (index / (arr.length - 1)) * (1 - 0.95)}
+    data-min-opacity={index < 3
+      ? 1 - (index / (arr.length - 1)) * (1 - 0.25)
+      : 0}
+    style={`z-index: ${3 - index};`}
+  >
+    <div
+      class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap"
+    >
+      {work.title}
+    </div>
+    <div class="text-xl">{work.desc}</div>
+    <div>
+      Links:
+      {
+        work.links.map((link) => {
+          return (
+            <a href={link.url} target="_blank" class="group/link mr-1">
+              <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                {link.state}
+              </span>
+            </a>
+          );
+        })
+      }
+    </div>
+    <div
+      class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity"
+    >
+      {work.tools.join(", ")}
+    </div>
+  </div>
+
+  {/**phone screens*/}
+  <div
+    class={"overflow-hidden min-h-[16rem] rounded-md shadow-md relative bg-tWhiteBrighter transition-all p-5 sm:hidden flex-col gap-3 " +
+      (index !== arr.length - 1 //applies to everything but last element
+        ? " border border-b-tMenuBack "
+        : "") +
+      (index !== 0 ? ` sm:-mt-56 lg:-mt-56 sm:group-hover:mt-4 mt-4 ` : "") + //applies to everything but first element
+      (index === 0 ? ` group isFirst ` : "")}
+    style={`z-index: ${3 - index};`}
+  >
+    <div
+      class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap"
+    >
+      {work.title}
+    </div>
+    <div class="text-xl">{work.desc}</div>
+    <div>
+      Links:
+      {
+        work.links.map((link) => {
+          return (
+            <a href={link.url} target="_blank" class="group/link mr-1">
+              <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                {link.state}
+              </span>
+            </a>
+          );
+        })
+      }
+    </div>
+    <div
+      class="absolute bottom-0 right-0 p-1 bg-tBlack text-tWhite text-xs rounded-tl-md sm:opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity"
+    >
+      {work.tools.join(", ")}
+    </div>
+  </div>
+</>
+
+<script>
+  const highlightsSection = document.getElementById("highlightsSection");
+  const workItems = document.querySelectorAll<HTMLDivElement>(
+    ".highlightedWorkItem"
+  );
+
+  const animationFrame = () => {
+    if (highlightsSection && highlightsSection?.matches(":hover")) {
+      workItems.forEach((item) => {
+        item.style.scale = "1";
+        item.style.opacity = "1";
+        item.style.height = "auto";
+      });
+    } else {
+      highlightsSection?.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+      workItems.forEach((item) => {
+        const minScale = item.getAttribute("data-min-scale")!;
+        const minOpacity = item.getAttribute("data-min-opacity")!;
+        item.style.height = "16rem";
+        item.style.scale = minScale;
+        item.style.opacity = minOpacity;
+      });
+    }
+    requestAnimationFrame(animationFrame);
+  };
+  requestAnimationFrame(animationFrame);
+</script>
