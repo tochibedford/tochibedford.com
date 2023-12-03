@@ -94,35 +94,3 @@ const { work, index, arr } = Astro.props;
     </div>
   </div>
 </>
-
-<script>
-  const highlightsSection = document.getElementById("highlightsSection");
-  const workItems = document.querySelectorAll<HTMLDivElement>(
-    ".highlightedWorkItem"
-  );
-
-  const animationFrame = () => {
-    if (highlightsSection && highlightsSection?.matches(":hover")) {
-      workItems.forEach((item) => {
-        item.style.scale = "1";
-        item.style.opacity = "1";
-        item.style.height = "auto";
-      });
-    } else {
-      highlightsSection?.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
-      workItems.forEach((item) => {
-        const minScale = item.getAttribute("data-min-scale")!;
-        const minOpacity = item.getAttribute("data-min-opacity")!;
-        item.style.height = "16rem";
-        item.style.scale = minScale;
-        item.style.opacity = minOpacity;
-      });
-    }
-    requestAnimationFrame(animationFrame);
-  };
-  requestAnimationFrame(animationFrame);
-</script>

@@ -23,205 +23,79 @@
     Events,
   } from "matter-js";
   import type { IBodyDefinition } from "matter-js";
-  const container = document.querySelector<HTMLDivElement>("#matterContainer")!;
-  const engine = Engine.create();
-  const render = Render.create({
-    element: container,
-    engine: engine,
-    options: {
-      width: container.clientWidth,
-      height: container.clientHeight,
-      background: "#EEECEC",
-      wireframes: false,
-    },
-    bounds: {
-      max: {
-        x: container.clientWidth,
-        y: container.clientHeight,
-      },
-      min: {
-        x: 0,
-        y: 0,
-      },
-    },
-  });
 
-  const boxA = Bodies.rectangle(400, 200, 80, 80, {
-    render: {
-      fillStyle: "transparent",
-      strokeStyle: "#69636D",
-      lineWidth: 1,
-    },
-  });
-  const boxB = Bodies.rectangle(450, 50, 80, 80, {
-    render: {
-      fillStyle: "transparent",
-      strokeStyle: "#69636D",
-      lineWidth: 1,
-    },
-  });
-  const ground = Bodies.rectangle(
-    container.clientWidth / 2,
-    container.clientHeight - 30,
-    container.clientWidth,
-    60,
-    {
-      isStatic: true,
+  function handleMatterWorld() {
+    const container =
+      document.querySelector<HTMLDivElement>("#matterContainer")!;
+    const engine = Engine.create();
+    const render = Render.create({
+      element: container,
+      engine: engine,
+      options: {
+        width: container.clientWidth,
+        height: container.clientHeight,
+        background: "#EEECEC",
+        wireframes: false,
+      },
+      bounds: {
+        max: {
+          x: container.clientWidth,
+          y: container.clientHeight,
+        },
+        min: {
+          x: 0,
+          y: 0,
+        },
+      },
+    });
+
+    const boxA = Bodies.rectangle(400, 200, 80, 80, {
       render: {
         fillStyle: "transparent",
         strokeStyle: "#69636D",
         lineWidth: 1,
       },
-    }
-  );
-
-  Composite.add(engine.world, []);
-
-  Render.run(render);
-
-  const runner = Runner.create();
-  Runner.run(runner, engine);
-
-  function calculateMeshValues() {
-    const radius = 15;
-    const columnGap = 10;
-    const rowGap = 10;
-    const boxWidth = columnGap + radius * 2;
-    const cols = Math.ceil(container.clientWidth / boxWidth) + 2;
-    const rows = Math.ceil(container.clientHeight / boxWidth) + 2;
-    return { radius, columnGap, rowGap, boxWidth, cols, rows };
-  }
-  const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
-  let cloth = compCloth(
-    -radius * 2,
-    -radius * 2,
-    cols,
-    rows,
-    columnGap,
-    rowGap,
-    false,
-    radius
-  );
-
-  Composite.add(engine.world, cloth);
-
-  const mouse = Mouse.create(render.canvas),
-    mouseConstraint = MouseConstraint.create(engine, {
-      mouse: mouse,
-      constraint: {
-        stiffness: 0.98,
-        render: {
-          visible: false,
-        },
+    });
+    const boxB = Bodies.rectangle(450, 50, 80, 80, {
+      render: {
+        fillStyle: "transparent",
+        strokeStyle: "#69636D",
+        lineWidth: 1,
       },
     });
-  Composite.add(engine.world, mouseConstraint);
-  render.mouse = mouse;
-  Render.lookAt(render, {
-    min: { x: 0, y: 0 },
-    max: { x: container.clientWidth, y: container.clientHeight },
-  });
-
-  function compCloth(
-    xx: number,
-    yy: number,
-    columns: number,
-    rows: number,
-    columnGap: number,
-    rowGap: number,
-    crossBrace: boolean,
-    particleRadius: number,
-    particleOptions?: IBodyDefinition,
-    constraintOptions?: boolean
-  ) {
-    var group = Body.nextGroup(true);
-
-    constraintOptions = Common.extend(
+    const ground = Bodies.rectangle(
+      container.clientWidth / 2,
+      container.clientHeight - 30,
+      container.clientWidth,
+      60,
       {
-        stiffness: 1,
+        isStatic: true,
         render: {
-          type: "line",
-          lineWidth: 0,
-          anchors: false,
-          strokeStyle: "#232124",
-          background: "blue",
+          fillStyle: "transparent",
+          strokeStyle: "#69636D",
+          lineWidth: 1,
         },
-      },
-      false
-    );
-
-    let cloth = Composites.stack(
-      xx,
-      yy,
-      columns,
-      rows,
-      columnGap,
-      rowGap,
-      function (x: number, y: number) {
-        const randomHSLColor = `hsl(${360 * Math.random()} , 0%, ${
-          60 + Math.random() * 30
-        }%)`;
-        particleOptions = Common.extend(
-          {
-            inertia: Infinity,
-            friction: 0.00001,
-            collisionFilter: { group: group },
-            render: { fillStyle: randomHSLColor },
-          },
-          false
-        );
-        return Bodies.circle(x, y, particleRadius, particleOptions);
       }
     );
 
-    Composites.mesh(cloth, columns, rows, crossBrace, constraintOptions);
+    Composite.add(engine.world, []);
 
-    cloth.label = "Cloth Body";
+    Render.run(render);
 
-    for (let i = 0; i < columns; i++) {
-      cloth.bodies[i].isStatic = true;
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    function calculateMeshValues() {
+      const radius = 15;
+      const columnGap = 10;
+      const rowGap = 10;
+      const boxWidth = columnGap + radius * 2;
+      const cols = Math.ceil(container.clientWidth / boxWidth) + 2;
+      const rows = Math.ceil(container.clientHeight / boxWidth) + 2;
+      return { radius, columnGap, rowGap, boxWidth, cols, rows };
     }
-    for (let i = 0; i < columns * rows - 1; i += columns) {
-      cloth.bodies[i].isStatic = true;
-      cloth.bodies[i + columns - 1].isStatic = true;
-    }
-    for (let i = columns * rows - columns; i < columns * rows; i++) {
-      cloth.bodies[i].isStatic = true;
-    }
-
-    return cloth;
-  }
-
-  container.addEventListener("mouseleave", () => {
-    const ev = new Event("mouseup");
-    mouseConstraint.mouse.element.dispatchEvent(ev);
-  });
-
-  /**
-   * mouse.mousewheel is missing in types, in fact all sourceEvents are
-   * PR time?
-   * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/matter-js/index.d.ts#L3229
-   */
-  mouseConstraint.mouse.element.removeEventListener(
-    "mousewheel",
-    (mouse as any).mousewheel
-  );
-
-  window.addEventListener("resize", () => {
-    render.bounds.max.x = container.clientWidth;
-    render.bounds.max.y = container.clientHeight;
-    render.options.width = container.clientWidth;
-    render.options.height = container.clientHeight;
-    render.canvas.width = container.clientWidth;
-    render.canvas.height = container.clientHeight;
-    /**
-     * setPixelRatio causes mobile screen touch offset for some reason
-     * */
-    // Render.setPixelRatio(render, window.devicePixelRatio) ;
-
     const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
-    Composite.remove(engine.world, cloth);
-    cloth = compCloth(
+    let cloth = compCloth(
       -radius * 2,
       -radius * 2,
       cols,
@@ -231,6 +105,141 @@
       false,
       radius
     );
+
     Composite.add(engine.world, cloth);
+
+    const mouse = Mouse.create(render.canvas),
+      mouseConstraint = MouseConstraint.create(engine, {
+        mouse: mouse,
+        constraint: {
+          stiffness: 0.98,
+          render: {
+            visible: false,
+          },
+        },
+      });
+    Composite.add(engine.world, mouseConstraint);
+    render.mouse = mouse;
+    Render.lookAt(render, {
+      min: { x: 0, y: 0 },
+      max: { x: container.clientWidth, y: container.clientHeight },
+    });
+
+    function compCloth(
+      xx: number,
+      yy: number,
+      columns: number,
+      rows: number,
+      columnGap: number,
+      rowGap: number,
+      crossBrace: boolean,
+      particleRadius: number,
+      particleOptions?: IBodyDefinition,
+      constraintOptions?: boolean
+    ) {
+      var group = Body.nextGroup(true);
+
+      constraintOptions = Common.extend(
+        {
+          stiffness: 1,
+          render: {
+            type: "line",
+            lineWidth: 0,
+            anchors: false,
+            strokeStyle: "#232124",
+            background: "blue",
+          },
+        },
+        false
+      );
+
+      let cloth = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        columnGap,
+        rowGap,
+        function (x: number, y: number) {
+          const randomHSLColor = `hsl(${360 * Math.random()} , 0%, ${
+            60 + Math.random() * 30
+          }%)`;
+          particleOptions = Common.extend(
+            {
+              inertia: Infinity,
+              friction: 0.00001,
+              collisionFilter: { group: group },
+              render: { fillStyle: randomHSLColor },
+            },
+            false
+          );
+          return Bodies.circle(x, y, particleRadius, particleOptions);
+        }
+      );
+
+      Composites.mesh(cloth, columns, rows, crossBrace, constraintOptions);
+
+      cloth.label = "Cloth Body";
+
+      for (let i = 0; i < columns; i++) {
+        cloth.bodies[i].isStatic = true;
+      }
+      for (let i = 0; i < columns * rows - 1; i += columns) {
+        cloth.bodies[i].isStatic = true;
+        cloth.bodies[i + columns - 1].isStatic = true;
+      }
+      for (let i = columns * rows - columns; i < columns * rows; i++) {
+        cloth.bodies[i].isStatic = true;
+      }
+
+      return cloth;
+    }
+
+    container.addEventListener("mouseleave", () => {
+      const ev = new Event("mouseup");
+      mouseConstraint.mouse.element.dispatchEvent(ev);
+    });
+
+    /**
+     * mouse.mousewheel is missing in types, in fact all sourceEvents are
+     * PR time?
+     * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/matter-js/index.d.ts#L3229
+     */
+    mouseConstraint.mouse.element.removeEventListener(
+      "mousewheel",
+      (mouse as any).mousewheel
+    );
+
+    window.addEventListener("resize", () => {
+      render.bounds.max.x = container.clientWidth;
+      render.bounds.max.y = container.clientHeight;
+      render.options.width = container.clientWidth;
+      render.options.height = container.clientHeight;
+      render.canvas.width = container.clientWidth;
+      render.canvas.height = container.clientHeight;
+      /**
+       * setPixelRatio causes mobile screen touch offset for some reason
+       * */
+      // Render.setPixelRatio(render, window.devicePixelRatio) ;
+
+      const { radius, columnGap, rowGap, cols, rows } = calculateMeshValues();
+      Composite.remove(engine.world, cloth);
+      cloth = compCloth(
+        -radius * 2,
+        -radius * 2,
+        cols,
+        rows,
+        columnGap,
+        rowGap,
+        false,
+        radius
+      );
+      Composite.add(engine.world, cloth);
+    });
+  }
+
+  document.addEventListener("astro:after-swap", handleMatterWorld);
+  document.addEventListener("astro:page-load", handleMatterWorld, {
+    once: true,
   });
 </script>

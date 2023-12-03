@@ -79,11 +79,11 @@ import closeIcon from "./assets/close.svg";
     const burgerEl = document.getElementById("burger")!;
     const closeEl = document.getElementById("close")!;
 
-    const menuListContainer = document.getElementById("menuListContainer")!;
+    const menuListContainer =
+      document.querySelector<HTMLUListElement>("#menuListContainer")!;
     let menuOpen = false;
 
     menuBurgerContainerEl.addEventListener("click", () => {
-      console.log(menuOpen);
       if (!menuOpen) {
         burgerEl.style.transform = "translate(-100%, 0%)";
         closeEl.style.transform = "translate(0%, 0%)";
@@ -102,7 +102,29 @@ import closeIcon from "./assets/close.svg";
       }
       menuOpen = !menuOpen;
     });
+
+    document.addEventListener(
+      "click",
+      (e) => {
+        if (
+          menuOpen &&
+          !(
+            e.target === menuListContainer ||
+            menuListContainer.contains(e.target as HTMLUListElement)
+          )
+        ) {
+          closeEl.style.transform = "translate(100%, 0%)";
+          burgerEl.style.transform = "translate(0%, 0%)";
+
+          menuListContainer.style.bottom = "10px";
+          menuListContainer.style.left = "10px";
+          menuListContainer.style.clipPath =
+            "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
+          menuOpen = false;
+        }
+      },
+      { capture: true }
+    );
   }
-  handleMenu();
   document.addEventListener("astro:page-load", handleMenu);
 </script>

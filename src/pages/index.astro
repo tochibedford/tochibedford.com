@@ -91,142 +91,168 @@ import WorkItem from "../components/WorkItem.astro";
 </HeroLayout>
 
 <script>
-  const highlightsSection = document.getElementById("highlightsSection");
-  const workItems = document.querySelectorAll<HTMLDivElement>(
-    ".highlightedWorkItem"
-  );
+  let frameNum: number;
 
-  const animationFrame = () => {
-    if (highlightsSection && highlightsSection?.matches(":hover")) {
-      workItems.forEach((item) => {
-        item.style.scale = "1";
-        item.style.opacity = "1";
-        item.style.height = "auto";
-      });
-    } else {
-      highlightsSection?.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
-      workItems.forEach((item) => {
-        const minScale = item.getAttribute("data-min-scale")!;
-        const minOpacity = item.getAttribute("data-min-opacity")!;
-        item.style.height = "16rem";
-        item.style.scale = minScale;
-        item.style.opacity = minOpacity;
-      });
-    }
-    requestAnimationFrame(animationFrame);
-  };
-  requestAnimationFrame(animationFrame);
+  function handleWorkAnim() {
+    const highlightsSection = document.getElementById("highlightsSection");
+    const workItems = document.querySelectorAll<HTMLDivElement>(
+      ".highlightedWorkItem"
+    );
+
+    const animationFrame = () => {
+      if (highlightsSection && highlightsSection?.matches(":hover")) {
+        workItems.forEach((item) => {
+          item.style.scale = "1";
+          item.style.opacity = "1";
+          item.style.height = "auto";
+        });
+      } else {
+        highlightsSection?.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "smooth",
+        });
+        workItems.forEach((item) => {
+          const minScale = item.getAttribute("data-min-scale")!;
+          const minOpacity = item.getAttribute("data-min-opacity")!;
+          item.style.height = "16rem";
+          item.style.scale = minScale;
+          item.style.opacity = minOpacity;
+        });
+      }
+      frameNum = requestAnimationFrame(animationFrame);
+    };
+    frameNum = requestAnimationFrame(animationFrame);
+  }
+
+  document.addEventListener("astro:after-swap", () => {
+    cancelAnimationFrame(frameNum);
+    handleWorkAnim();
+  });
+  document.addEventListener(
+    "astro:page-load",
+    () => {
+      cancelAnimationFrame(frameNum);
+      handleWorkAnim();
+    },
+    { once: true }
+  );
 </script>
 
 <script>
   import { gsap } from "gsap";
   import ScrollTrigger from "gsap/ScrollTrigger";
-  gsap.registerPlugin(ScrollTrigger);
+  function animateText() {
+    gsap.registerPlugin(ScrollTrigger);
 
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: "#nunText",
-    },
-  });
-  tl.fromTo(
-    "#nunText",
-    { x: -50, opacity: 0 },
-    { x: 0, opacity: 1, delay: 1, duration: 0.5 }
-  )
-    .to("#nunText", {
-      y: -50,
-      opacity: 0,
-      delay: 1.5,
-      duration: 0.5,
-    })
-    .fromTo(
-      "#hitMeUpText",
-      {
-        y: 50,
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#nunText",
       },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.3,
-      },
-      "-=0.5"
+    });
+    tl.fromTo(
+      "#nunText",
+      { x: -50, opacity: 0 },
+      { x: 0, opacity: 1, delay: 1, duration: 0.5 }
     )
-    .to("#hitMeUpText", {
-      y: -50,
-      opacity: 0,
-      duration: 0.3,
-      delay: 2,
-    })
-    .fromTo(
-      "#emailText",
-      {
-        y: 50,
-      },
-      {
-        y: 0,
-        opacity: 1,
+      .to("#nunText", {
+        y: -50,
+        opacity: 0,
+        delay: 1.5,
+        duration: 0.5,
+      })
+      .fromTo(
+        "#hitMeUpText",
+        {
+          y: 50,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.3,
+        },
+        "-=0.5"
+      )
+      .to("#hitMeUpText", {
+        y: -50,
+        opacity: 0,
         duration: 0.3,
-      },
-      "-=0.3"
-    );
+        delay: 2,
+      })
+      .fromTo(
+        "#emailText",
+        {
+          y: 50,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.3,
+        },
+        "-=0.3"
+      );
+  }
+  document.addEventListener("astro:after-swap", animateText);
+  document.addEventListener("astro:page-load", animateText, { once: true });
 </script>
 
 <script>
   import { gsap } from "gsap";
-  const copyButtonClicked = gsap.timeline({
-    onComplete: () => {
-      copyButton.disabled = true;
-    },
-    onReverseComplete: () => {
-      copyButton.disabled = false;
-    },
-  });
-
-  const copyButton = document.querySelector<HTMLButtonElement>("#copyButton")!;
-  const copyText = document.querySelector<HTMLButtonElement>("#copyText")!;
-  const okText = document.querySelector<HTMLButtonElement>("#okText")!;
-  copyButtonClicked
-    .to(copyText, {
-      y: -20,
-      opacity: 0,
-      duration: 0.1,
-      ease: "expo.inOut",
+  function handleCopy() {
+    const copyButtonClicked = gsap.timeline({
       onComplete: () => {
-        copyText.hidden = true;
+        copyButton.disabled = true;
       },
-    })
-    .fromTo(
-      okText,
-      {
-        y: 20,
-        ease: "expo.inOut",
+      onReverseComplete: () => {
+        copyButton.disabled = false;
       },
-      {
-        y: 0,
-        opacity: 1,
+    });
+
+    const copyButton =
+      document.querySelector<HTMLButtonElement>("#copyButton")!;
+    const copyText = document.querySelector<HTMLButtonElement>("#copyText")!;
+    const okText = document.querySelector<HTMLButtonElement>("#okText")!;
+    copyButtonClicked
+      .to(copyText, {
+        y: -20,
+        opacity: 0,
         duration: 0.1,
         ease: "expo.inOut",
-        onReverseComplete: () => {
-          copyText.hidden = false;
+        onComplete: () => {
+          copyText.hidden = true;
         },
-      }
-    )
-    .pause();
-  copyButton.onclick = () => {
-    navigator.clipboard
-      .writeText("tochibedford.work@gmail.com")
-      .then(() => {
-        copyButtonClicked.play();
-        setTimeout(() => {
-          copyButtonClicked.reverse();
-        }, 3000);
       })
-      .catch((res) => {
-        console.error(res);
-      });
-  };
+      .fromTo(
+        okText,
+        {
+          y: 20,
+          ease: "expo.inOut",
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.1,
+          ease: "expo.inOut",
+          onReverseComplete: () => {
+            copyText.hidden = false;
+          },
+        }
+      )
+      .pause();
+    copyButton.onclick = () => {
+      navigator.clipboard
+        .writeText("tochibedford.work@gmail.com")
+        .then(() => {
+          copyButtonClicked.play();
+          setTimeout(() => {
+            copyButtonClicked.reverse();
+          }, 3000);
+        })
+        .catch((res) => {
+          console.error(res);
+        });
+    };
+  }
+  document.addEventListener("astro:after-swap", handleCopy);
+  document.addEventListener("astro:page-load", handleCopy, { once: true });
 </script>
