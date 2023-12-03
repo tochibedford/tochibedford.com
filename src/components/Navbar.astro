@@ -83,22 +83,29 @@ import closeIcon from "./assets/close.svg";
       document.querySelector<HTMLUListElement>("#menuListContainer")!;
     let menuOpen = false;
 
+    function handleOpenMenu() {
+      burgerEl.style.transform = "translate(-100%, 0%)";
+      closeEl.style.transform = "translate(0%, 0%)";
+      menuListContainer.style.bottom = "-10px";
+      menuListContainer.style.left = "-5%";
+      menuListContainer.style.clipPath =
+        "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+    }
+    function handleCloseMenu() {
+      closeEl.style.transform = "translate(100%, 0%)";
+      burgerEl.style.transform = "translate(0%, 0%)";
+
+      menuListContainer.style.bottom = "10px";
+      menuListContainer.style.left = "10px";
+      menuListContainer.style.clipPath =
+        "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
+    }
+
     menuBurgerContainerEl.addEventListener("click", () => {
       if (!menuOpen) {
-        burgerEl.style.transform = "translate(-100%, 0%)";
-        closeEl.style.transform = "translate(0%, 0%)";
-        menuListContainer.style.bottom = "-10px";
-        menuListContainer.style.left = "-5%";
-        menuListContainer.style.clipPath =
-          "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+        handleOpenMenu();
       } else {
-        closeEl.style.transform = "translate(100%, 0%)";
-        burgerEl.style.transform = "translate(0%, 0%)";
-
-        menuListContainer.style.bottom = "10px";
-        menuListContainer.style.left = "10px";
-        menuListContainer.style.clipPath =
-          "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
+        handleCloseMenu();
       }
       menuOpen = !menuOpen;
     });
@@ -113,13 +120,7 @@ import closeIcon from "./assets/close.svg";
             menuListContainer.contains(e.target as HTMLUListElement)
           )
         ) {
-          closeEl.style.transform = "translate(100%, 0%)";
-          burgerEl.style.transform = "translate(0%, 0%)";
-
-          menuListContainer.style.bottom = "10px";
-          menuListContainer.style.left = "10px";
-          menuListContainer.style.clipPath =
-            "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
+          handleCloseMenu();
           menuOpen = false;
         }
       },
