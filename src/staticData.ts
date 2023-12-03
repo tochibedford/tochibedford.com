@@ -117,6 +117,7 @@ export const works: {
   tools: Tool[];
   links: { state: WorkState; url: string }[];
   highlighted?: boolean;
+  inProgress?: boolean;
   hide?: boolean;
 }[] = [
   {
@@ -142,6 +143,7 @@ export const works: {
       Tool.Electron,
       Tool.Vite,
     ],
+    inProgress: true,
     links: [
       { state: WorkState.Live, url: "https://querci.xyz" },
       {

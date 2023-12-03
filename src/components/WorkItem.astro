@@ -28,22 +28,25 @@ const { work, index, arr } = Astro.props;
       class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap"
     >
       {work.title}
+      {work.inProgress && <span class="text-lg">(*currently building)</span>}
     </div>
     <div class="text-xl">{work.desc}</div>
-    <div>
-      Links:
-      {
-        work.links.map((link) => {
-          return (
-            <a href={link.url} target="_blank" class="group/link mr-1">
-              <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
-                {link.state}
-              </span>
-            </a>
-          );
-        })
-      }
-    </div>
+    {
+      !work.inProgress && (
+        <div>
+          Links:
+          {work.links.map((link) => {
+            return (
+              <a href={link.url} target="_blank" class="group/link mr-1">
+                <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                  {link.state}
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      )
+    }
     <div
       class="absolute bottom-0 right-0 p-2 bg-tBlack text-tWhite rounded-tl-md opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity"
     >
@@ -65,22 +68,25 @@ const { work, index, arr } = Astro.props;
       class="text-3xl sm:text-5xl md:text-5xl lg:text-8xl font-bold uppercase text-tBlack whitespace-nowrap"
     >
       {work.title}
+      {work.inProgress && <span class="text-xs">(*currently building)</span>}
     </div>
     <div class="text-xl">{work.desc}</div>
-    <div>
-      Links:
-      {
-        work.links.map((link) => {
-          return (
-            <a href={link.url} target="_blank" class="group/link mr-1">
-              <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
-                {link.state}
-              </span>
-            </a>
-          );
-        })
-      }
-    </div>
+    {
+      !work.inProgress && (
+        <div>
+          Links:
+          {work.links.map((link) => {
+            return (
+              <a href={link.url} target="_blank" class="group/link mr-1">
+                <span class=" bg-tBlack text-tWhite px-2 rounded-md group-hover/link:scale-110 inline-block transition-transform">
+                  {link.state}
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      )
+    }
     <div
       class="absolute bottom-0 right-0 p-1 bg-tBlack text-tWhite text-xs rounded-tl-md sm:opacity-0 group-hover:opacity-100 group-[.isFirst]:opacity-100 transition-opacity"
     >
