@@ -86,6 +86,8 @@ export enum WorkState {
 }
 
 export enum Tool {
+  C = "C",
+  Rust = "Rust",
   Sharp = "Sharp",
   Glob = "glob",
   Astro = "Astro",
@@ -99,8 +101,7 @@ export enum Tool {
   Electron = "Electron JS",
   NodeJs = "Node JS",
   Javascript = "Javascript",
-  SCSS = "SCSS",
-  SASS = "SASS",
+  SCSS = "SCSS/SASS",
   Python = "Python",
   MYSQL = "MySQL",
   CSharp = "C#",
@@ -117,6 +118,42 @@ export enum Tool {
   SanityCMS = "Sanity CMS",
   Vite = "Vite",
 }
+
+export const toolLinks: { [key in Tool]: string | undefined } = {
+  [Tool.Astro]: "https://astro.build/",
+  [Tool.C]: undefined,
+  [Tool.Rust]: "https://www.rust-lang.org/",
+  [Tool.Sharp]: "https://sharp.pixelplumbing.com/",
+  [Tool.Glob]: "https://github.com/isaacs/node-glob",
+  [Tool.Axios]: "https://axios-http.com/",
+  [Tool.Clerk]: "https://clerk.com/",
+  [Tool.FramerMotion]: "https://www.framer.com/motion/",
+  [Tool.JSZip]: "https://stuk.github.io/jszip/",
+  [Tool.Sonner]: "https://sonner.emilkowal.ski/",
+  [Tool.Tailwind]: "https://tailwindcss.com/",
+  [Tool.Typescript]: "https://www.typescriptlang.org/",
+  [Tool.Electron]: "https://www.electronjs.org/",
+  [Tool.NodeJs]: "https://nodejs.org/",
+  [Tool.Javascript]:
+    "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics",
+  [Tool.SCSS]: "https://sass-lang.com/",
+  [Tool.Python]: "https://www.python.org/",
+  [Tool.MYSQL]: "https://www.mysql.com/",
+  [Tool.CSharp]:
+    "https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/",
+  [Tool.Jest]: "https://jestjs.io/",
+  [Tool.React]: "https://react.dev/",
+  [Tool.Bootstrap]: "https://getbootstrap.com/",
+  [Tool.Flask]: "https://flask.palletsprojects.com/en/3.0.x/",
+  [Tool.Express]: "https://expressjs.com/",
+  [Tool.Webpack]: "https://webpack.js.org/",
+  [Tool.Babel]: "https://babeljs.io/",
+  [Tool.Parcel]: "https://parceljs.org/",
+  [Tool.MongoDB]: "https://www.mongodb.com/",
+  [Tool.FireStore]: "https://firebase.google.com/docs/firestore",
+  [Tool.SanityCMS]: "https://www.sanity.io/",
+  [Tool.Vite]: "https://vitejs.dev/",
+};
 
 export const works: {
   title: string;
@@ -194,5 +231,39 @@ export const works: {
       },
     ],
     highlighted: false,
+  },
+];
+
+export const tools: {
+  groupName: string;
+  groupItems: Tool[];
+}[] = [
+  {
+    groupName: "Languages",
+    groupItems: [
+      Tool.Typescript,
+      Tool.Javascript,
+      Tool.C,
+      Tool.Rust,
+      Tool.Python,
+    ],
+  },
+  {
+    groupName: "FrameWorks/Libraries (javascript/typescript)",
+    groupItems: [
+      Tool.Astro,
+      Tool.React,
+      Tool.Electron,
+      Tool.JSZip,
+      Tool.Tailwind,
+      Tool.Express,
+      Tool.Axios,
+      Tool.Flask,
+      Tool.Sonner,
+      Tool.Vite,
+      Tool.MongoDB,
+      Tool.FramerMotion,
+      Tool.Glob,
+    ],
   },
 ];

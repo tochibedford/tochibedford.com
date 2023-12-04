@@ -1,5 +1,7 @@
 ---
 import HeroLayout from "../layouts/HeroLayout.astro";
+import { tools, toolLinks } from "../staticData";
+import ExternalLinkIcon from "./assets/externalLink.png";
 ---
 
 <HeroLayout>
@@ -14,12 +16,36 @@ import HeroLayout from "../layouts/HeroLayout.astro";
       day-to-day projects. Of course, these are not suggestions on what YOU
       should use, just more of a log of tools that have my heart at the moment.
     </section>
-    <section class="px-2 lg:px-16 md:px-8 text-xl">
-      <h2
-        class="lg:px-16 md:px-8 md:text-left text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
-      >
-        TOOLS
-      </h2>
+    <section class="px-2 lg:px-16 md:px-8 text-xl bg-tMenuItemBack">
+      {
+        tools.map((group) => {
+          return (
+            <div class="p-5 mt-5 rounded-lg w-1/2">
+              <h3 class="text-3xl">{group.groupName}</h3>
+              <div class="grid grid-cols-3 gap-4">
+                {group.groupItems.map((item) => (
+                  <a
+                    href={toolLinks[item]}
+                    target="_blank"
+                    class="group/tool rounded-md bg-tMenuBack py-6 mt-2 basis-5/12 grow-0 p-5 flex items-center justify-between"
+                  >
+                    <span>{item}</span>
+                    {toolLinks[item] && (
+                      <span class="group-hover/tool:opacity-100 opacity-0 transition-opacity">
+                        <img
+                          src={ExternalLinkIcon.src}
+                          class="w-5 h-5"
+                          alt="external link icon"
+                        />
+                      </span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })
+      }
     </section>
   </main>
 </HeroLayout>
