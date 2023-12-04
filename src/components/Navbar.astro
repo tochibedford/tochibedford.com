@@ -83,6 +83,18 @@ import closeIcon from "./assets/close.svg";
       document.querySelector<HTMLUListElement>("#menuListContainer")!;
     let menuOpen = false;
 
+    function handleOutClick(e: MouseEvent) {
+      if (
+        menuOpen &&
+        !(
+          e.target === menuListContainer ||
+          menuListContainer.contains(e.target as HTMLUListElement)
+        )
+      ) {
+        handleCloseMenu();
+        menuOpen = false;
+      }
+    }
     function handleOpenMenu() {
       burgerEl.style.transform = "translate(-100%, 0%)";
       closeEl.style.transform = "translate(0%, 0%)";
@@ -90,6 +102,9 @@ import closeIcon from "./assets/close.svg";
       menuListContainer.style.left = "-5%";
       menuListContainer.style.clipPath =
         "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
+      document.addEventListener("click", (e) => {
+        handleOutClick(e);
+      });
     }
     function handleCloseMenu() {
       closeEl.style.transform = "translate(100%, 0%)";
@@ -99,33 +114,19 @@ import closeIcon from "./assets/close.svg";
       menuListContainer.style.left = "10px";
       menuListContainer.style.clipPath =
         "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)";
+      document.removeEventListener("click", handleOutClick);
     }
 
-    menuBurgerContainerEl.addEventListener("click", () => {
+    menuBurgerContainerEl.addEventListener("click", (e) => {
       if (!menuOpen) {
+        e.stopImmediatePropagation();
         handleOpenMenu();
       } else {
+        e.stopImmediatePropagation();
         handleCloseMenu();
       }
       menuOpen = !menuOpen;
     });
-
-    document.addEventListener(
-      "click",
-      (e) => {
-        if (
-          menuOpen &&
-          !(
-            e.target === menuListContainer ||
-            menuListContainer.contains(e.target as HTMLUListElement)
-          )
-        ) {
-          handleCloseMenu();
-          menuOpen = false;
-        }
-      },
-      { capture: true }
-    );
   }
   document.addEventListener("astro:page-load", handleMenu);
 </script>
