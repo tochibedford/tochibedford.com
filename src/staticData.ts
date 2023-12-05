@@ -117,6 +117,14 @@ export enum Tool {
   FireStore = "Firebase FireStore",
   SanityCMS = "Sanity CMS",
   Vite = "Vite",
+  PassportJs = "Passport",
+  CloudRun = "Google Cloud Run",
+  AppEngine = "Google App Engine",
+  RDS = "AWS RDS",
+  S3 = "AWS S3",
+  PlanetScale = "Planet Scale",
+  Gsap = "Gsap",
+  ReactSpring = "React Spring",
 }
 
 export const toolLinks: { [key in Tool]: string | undefined } = {
@@ -153,6 +161,14 @@ export const toolLinks: { [key in Tool]: string | undefined } = {
   [Tool.FireStore]: "https://firebase.google.com/docs/firestore",
   [Tool.SanityCMS]: "https://www.sanity.io/",
   [Tool.Vite]: "https://vitejs.dev/",
+  [Tool.PassportJs]: "https://www.passportjs.org/",
+  [Tool.CloudRun]: "https://cloud.google.com/run",
+  [Tool.AppEngine]: "https://cloud.google.com/appengine",
+  [Tool.RDS]: "https://aws.amazon.com/rds/",
+  [Tool.S3]: "https://aws.amazon.com/s3/",
+  [Tool.PlanetScale]: "https://planetscale.com/",
+  [Tool.Gsap]: "https://gsap.com",
+  [Tool.ReactSpring]: "https://www.react-spring.dev/",
 };
 
 export const works: {
@@ -265,5 +281,27 @@ export const tools: {
       Tool.FramerMotion,
       Tool.Glob,
     ],
+  },
+  {
+    groupName: "Auth/Auth Management",
+    groupItems: [Tool.Clerk, Tool.PassportJs],
+  },
+  {
+    groupName: "Server/Container Deployment",
+    groupItems: [Tool.CloudRun, Tool.AppEngine],
+  },
+  {
+    groupName: "Storage/Databases",
+    groupItems: [
+      Tool.S3,
+      Tool.RDS,
+      Tool.AppEngine,
+      Tool.FireStore,
+      Tool.PlanetScale,
+    ],
+  },
+  {
+    groupName: "Animation and tweening Libs",
+    groupItems: [Tool.Gsap, Tool.FramerMotion, Tool.ReactSpring],
   },
 ];
