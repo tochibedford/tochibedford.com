@@ -21,18 +21,18 @@ import ExternalLinkIcon from "./assets/externalLink.png";
       {
         tools.map((group) => {
           return (
-            <div class="p-5 mt-5 rounded-lg w-1/2">
-              <h3 class="text-3xl">{group.groupName}</h3>
-              <div class="grid grid-cols-3 gap-4">
+            <div class="p-5 mt-5 rounded-lg xl:w-1/2 md:w-3/4 sm:w-10/12 w-full">
+              <h3 class="md:text-3xl sm:text-xl text-lg">{group.groupName}</h3>
+              <div class="grid md:grid-cols-3 grid-cols-2 gap-4">
                 {group.groupItems.map((item) => (
                   <a
                     href={toolLinks[item]}
                     target="_blank"
-                    class="group/tool rounded-md bg-tMenuBack py-6 mt-2 basis-5/12 grow-0 p-5 flex items-center justify-between"
+                    class="group/tool rounded-md bg-tMenuBack py-6 mt-2 basis-5/12 grow-0 p-5 flex items-center justify-between flex-wrap text-lg"
                   >
                     <span>{item}</span>
                     {toolLinks[item] && (
-                      <span class="group-hover/tool:opacity-100 opacity-0 transition-opacity">
+                      <span class="group-hover/tool:opacity-100 md:opacity-0 opacity-40 transition-opacity ">
                         <img
                           src={ExternalLinkIcon.src}
                           class="w-5 h-5"
