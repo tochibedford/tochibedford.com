@@ -40,14 +40,7 @@ export const navMenuItems: {
     displayName: "Resume",
     link: "/resume",
     isExternal: false,
-    released: true,
-  },
-  {
-    idName: "experiments",
-    displayName: "Experiments",
-    link: "/experiments",
-    isExternal: false,
-    released: true,
+    released: false,
   },
 ];
 
@@ -91,6 +84,7 @@ export enum Tool {
   Sharp = "Sharp",
   Glob = "glob",
   Astro = "Astro",
+  Angular = "Angular",
   Axios = "Axios",
   Clerk = "Clerk JS",
   FramerMotion = "Framer Motion",
@@ -125,6 +119,7 @@ export enum Tool {
   PlanetScale = "Planet Scale",
   Gsap = "Gsap",
   ReactSpring = "React Spring",
+  RxJS = "RxJS",
 }
 
 export const toolLinks: { [key in Tool]: string | undefined } = {
@@ -134,6 +129,7 @@ export const toolLinks: { [key in Tool]: string | undefined } = {
   [Tool.Sharp]: "https://sharp.pixelplumbing.com/",
   [Tool.Glob]: "https://github.com/isaacs/node-glob",
   [Tool.Axios]: "https://axios-http.com/",
+  [Tool.Angular]: "https://angular.io/",
   [Tool.Clerk]: "https://clerk.com/",
   [Tool.FramerMotion]: "https://www.framer.com/motion/",
   [Tool.JSZip]: "https://stuk.github.io/jszip/",
@@ -169,6 +165,7 @@ export const toolLinks: { [key in Tool]: string | undefined } = {
   [Tool.PlanetScale]: "https://planetscale.com/",
   [Tool.Gsap]: "https://gsap.com",
   [Tool.ReactSpring]: "https://www.react-spring.dev/",
+  [Tool.RxJS]: "https://rxjs.dev/",
 };
 
 export const works: {
@@ -180,6 +177,20 @@ export const works: {
   inProgress?: boolean;
   hide?: boolean;
 }[] = [
+  {
+    title: "Offtop",
+    desc: "A better way to organize & share beats, samples, & demos.",
+    tools: [
+      Tool.Angular,
+      Tool.RxJS,
+      Tool.Typescript,
+      Tool.SCSS,
+      Tool.NodeJs,
+      Tool.MongoDB,
+    ],
+    links: [{ state: WorkState.Live, url: "https://offtop.com" }],
+    highlighted: true,
+  },
   {
     title: "44DB Website",
     desc: "Website done for the super producer collective 44DB.",
@@ -268,6 +279,8 @@ export const tools: {
     groupName: "FrameWorks/Libraries (javascript/typescript)",
     groupItems: [
       Tool.Astro,
+      Tool.Angular,
+      Tool.RxJS,
       Tool.React,
       Tool.Electron,
       Tool.JSZip,
@@ -294,6 +307,7 @@ export const tools: {
     groupName: "Storage/Databases",
     groupItems: [
       Tool.S3,
+      Tool.MongoDB,
       Tool.RDS,
       Tool.AppEngine,
       Tool.FireStore,
