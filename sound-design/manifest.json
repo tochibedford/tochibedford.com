@@ -1,0 +1,234 @@
+{
+ "bpm": 120,
+ "slot_seconds": {
+  "keys": 4.0,
+  "pluck": 4.0,
+  "bass": 4.0,
+  "pad": 12.0,
+  "swell": 4.0
+ },
+ "sounds": [
+  {
+   "file": "keys-q.wav",
+   "source": "keys",
+   "slot": 0,
+   "midi": 65,
+   "key": "q"
+  },
+  {
+   "file": "keys-w.wav",
+   "source": "keys",
+   "slot": 1,
+   "midi": 68,
+   "key": "w"
+  },
+  {
+   "file": "keys-e.wav",
+   "source": "keys",
+   "slot": 2,
+   "midi": 70,
+   "key": "e"
+  },
+  {
+   "file": "keys-r.wav",
+   "source": "keys",
+   "slot": 3,
+   "midi": 72,
+   "key": "r"
+  },
+  {
+   "file": "keys-t.wav",
+   "source": "keys",
+   "slot": 4,
+   "midi": 75,
+   "key": "t"
+  },
+  {
+   "file": "keys-y.wav",
+   "source": "keys",
+   "slot": 5,
+   "midi": 77,
+   "key": "y"
+  },
+  {
+   "file": "keys-u.wav",
+   "source": "keys",
+   "slot": 6,
+   "midi": 80,
+   "key": "u"
+  },
+  {
+   "file": "keys-i.wav",
+   "source": "keys",
+   "slot": 7,
+   "midi": 82,
+   "key": "i"
+  },
+  {
+   "file": "keys-o.wav",
+   "source": "keys",
+   "slot": 8,
+   "midi": 84,
+   "key": "o"
+  },
+  {
+   "file": "keys-p.wav",
+   "source": "keys",
+   "slot": 9,
+   "midi": 87,
+   "key": "p"
+  },
+  {
+   "file": "pluck-a.wav",
+   "source": "pluck",
+   "slot": 0,
+   "midi": 53,
+   "key": "a"
+  },
+  {
+   "file": "pluck-s.wav",
+   "source": "pluck",
+   "slot": 1,
+   "midi": 56,
+   "key": "s"
+  },
+  {
+   "file": "pluck-d.wav",
+   "source": "pluck",
+   "slot": 2,
+   "midi": 58,
+   "key": "d"
+  },
+  {
+   "file": "pluck-f.wav",
+   "source": "pluck",
+   "slot": 3,
+   "midi": 60,
+   "key": "f"
+  },
+  {
+   "file": "pluck-g.wav",
+   "source": "pluck",
+   "slot": 4,
+   "midi": 63,
+   "key": "g"
+  },
+  {
+   "file": "pluck-h.wav",
+   "source": "pluck",
+   "slot": 5,
+   "midi": 65,
+   "key": "h"
+  },
+  {
+   "file": "pluck-j.wav",
+   "source": "pluck",
+   "slot": 6,
+   "midi": 68,
+   "key": "j"
+  },
+  {
+   "file": "pluck-k.wav",
+   "source": "pluck",
+   "slot": 7,
+   "midi": 70,
+   "key": "k"
+  },
+  {
+   "file": "pluck-l.wav",
+   "source": "pluck",
+   "slot": 8,
+   "midi": 72,
+   "key": "l"
+  },
+  {
+   "file": "bass-z.wav",
+   "source": "bass",
+   "slot": 0,
+   "midi": 41,
+   "key": "z"
+  },
+  {
+   "file": "bass-x.wav",
+   "source": "bass",
+   "slot": 1,
+   "midi": 44,
+   "key": "x"
+  },
+  {
+   "file": "bass-c.wav",
+   "source": "bass",
+   "slot": 2,
+   "midi": 46,
+   "key": "c"
+  },
+  {
+   "file": "bass-v.wav",
+   "source": "bass",
+   "slot": 3,
+   "midi": 48,
+   "key": "v"
+  },
+  {
+   "file": "bass-b.wav",
+   "source": "bass",
+   "slot": 4,
+   "midi": 51,
+   "key": "b"
+  },
+  {
+   "file": "bass-n.wav",
+   "source": "bass",
+   "slot": 5,
+   "midi": 53,
+   "key": "n"
+  },
+  {
+   "file": "bass-m.wav",
+   "source": "bass",
+   "slot": 6,
+   "midi": 56,
+   "key": "m"
+  },
+  {
+   "file": "pad-fm9.wav",
+   "source": "pad",
+   "slot": 0
+  },
+  {
+   "file": "pad-dbmaj7.wav",
+   "source": "pad",
+   "slot": 1
+  },
+  {
+   "file": "pad-abmaj9.wav",
+   "source": "pad",
+   "slot": 2
+  },
+  {
+   "file": "pad-eb69.wav",
+   "source": "pad",
+   "slot": 3
+  },
+  {
+   "file": "swell-fm9.wav",
+   "source": "swell",
+   "slot": 0
+  },
+  {
+   "file": "swell-dbmaj7.wav",
+   "source": "swell",
+   "slot": 1
+  },
+  {
+   "file": "swell-abmaj9.wav",
+   "source": "swell",
+   "slot": 2
+  },
+  {
+   "file": "swell-eb69.wav",
+   "source": "swell",
+   "slot": 3
+  }
+ ]
+}

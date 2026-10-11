@@ -1,0 +1,240 @@
+{
+ "keys-q.mp3": {
+  "source": "keys",
+  "key": "q",
+  "midi": 65,
+  "dur": 3.034,
+  "onset_ms": 3.4
+ },
+ "keys-w.mp3": {
+  "source": "keys",
+  "key": "w",
+  "midi": 68,
+  "dur": 3.076,
+  "onset_ms": 2.1
+ },
+ "keys-e.mp3": {
+  "source": "keys",
+  "key": "e",
+  "midi": 70,
+  "dur": 3.044,
+  "onset_ms": 1.9
+ },
+ "keys-r.mp3": {
+  "source": "keys",
+  "key": "r",
+  "midi": 72,
+  "dur": 3.077,
+  "onset_ms": 1.7
+ },
+ "keys-t.mp3": {
+  "source": "keys",
+  "key": "t",
+  "midi": 75,
+  "dur": 3.088,
+  "onset_ms": 2.2
+ },
+ "keys-y.mp3": {
+  "source": "keys",
+  "key": "y",
+  "midi": 77,
+  "dur": 3.035,
+  "onset_ms": 2.0
+ },
+ "keys-u.mp3": {
+  "source": "keys",
+  "key": "u",
+  "midi": 80,
+  "dur": 3.058,
+  "onset_ms": 1.9
+ },
+ "keys-i.mp3": {
+  "source": "keys",
+  "key": "i",
+  "midi": 82,
+  "dur": 3.039,
+  "onset_ms": 1.5
+ },
+ "keys-o.mp3": {
+  "source": "keys",
+  "key": "o",
+  "midi": 84,
+  "dur": 3.08,
+  "onset_ms": 1.5
+ },
+ "keys-p.mp3": {
+  "source": "keys",
+  "key": "p",
+  "midi": 87,
+  "dur": 3.021,
+  "onset_ms": 1.8
+ },
+ "pluck-a.mp3": {
+  "source": "pluck",
+  "key": "a",
+  "midi": 53,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-s.mp3": {
+  "source": "pluck",
+  "key": "s",
+  "midi": 56,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-d.mp3": {
+  "source": "pluck",
+  "key": "d",
+  "midi": 58,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-f.mp3": {
+  "source": "pluck",
+  "key": "f",
+  "midi": 60,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-g.mp3": {
+  "source": "pluck",
+  "key": "g",
+  "midi": 63,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-h.mp3": {
+  "source": "pluck",
+  "key": "h",
+  "midi": 65,
+  "dur": 4.0,
+  "onset_ms": 0.5
+ },
+ "pluck-j.mp3": {
+  "source": "pluck",
+  "key": "j",
+  "midi": 68,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-k.mp3": {
+  "source": "pluck",
+  "key": "k",
+  "midi": 70,
+  "dur": 4.0,
+  "onset_ms": 2.0
+ },
+ "pluck-l.mp3": {
+  "source": "pluck",
+  "key": "l",
+  "midi": 72,
+  "dur": 4.0,
+  "onset_ms": 1.5
+ },
+ "bass-z.mp3": {
+  "source": "bass",
+  "key": "z",
+  "midi": 41,
+  "dur": 0.825,
+  "onset_ms": 2.1
+ },
+ "bass-x.mp3": {
+  "source": "bass",
+  "key": "x",
+  "midi": 44,
+  "dur": 0.817,
+  "onset_ms": 2.1
+ },
+ "bass-c.mp3": {
+  "source": "bass",
+  "key": "c",
+  "midi": 46,
+  "dur": 0.828,
+  "onset_ms": 2.2
+ },
+ "bass-v.mp3": {
+  "source": "bass",
+  "key": "v",
+  "midi": 48,
+  "dur": 0.826,
+  "onset_ms": 2.1
+ },
+ "bass-b.mp3": {
+  "source": "bass",
+  "key": "b",
+  "midi": 51,
+  "dur": 0.819,
+  "onset_ms": 2.2
+ },
+ "bass-n.mp3": {
+  "source": "bass",
+  "key": "n",
+  "midi": 53,
+  "dur": 0.823,
+  "onset_ms": 2.1
+ },
+ "bass-m.mp3": {
+  "source": "bass",
+  "key": "m",
+  "midi": 56,
+  "dur": 0.828,
+  "onset_ms": 2.1
+ },
+ "pad-fm9.mp3": {
+  "source": "pad",
+  "key": null,
+  "midi": null,
+  "dur": 9.87,
+  "onset_ms": 63.6
+ },
+ "pad-dbmaj7.mp3": {
+  "source": "pad",
+  "key": null,
+  "midi": null,
+  "dur": 9.86,
+  "onset_ms": 51.3
+ },
+ "pad-abmaj9.mp3": {
+  "source": "pad",
+  "key": null,
+  "midi": null,
+  "dur": 9.816,
+  "onset_ms": 47.7
+ },
+ "pad-eb69.mp3": {
+  "source": "pad",
+  "key": null,
+  "midi": null,
+  "dur": 9.722,
+  "onset_ms": 61.0
+ },
+ "swell-fm9.mp3": {
+  "source": "swell",
+  "key": null,
+  "midi": null,
+  "dur": 2.495,
+  "onset_ms": 5.7
+ },
+ "swell-dbmaj7.mp3": {
+  "source": "swell",
+  "key": null,
+  "midi": null,
+  "dur": 2.267,
+  "onset_ms": 5.7
+ },
+ "swell-abmaj9.mp3": {
+  "source": "swell",
+  "key": null,
+  "midi": null,
+  "dur": 2.418,
+  "onset_ms": 5.6
+ },
+ "swell-eb69.mp3": {
+  "source": "swell",
+  "key": null,
+  "midi": null,
+  "dur": 2.363,
+  "onset_ms": 5.6
+ }
+}

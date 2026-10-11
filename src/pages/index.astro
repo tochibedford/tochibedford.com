@@ -1,258 +1,280 @@
 ---
-import HeroLayout from "../layouts/HeroLayout.astro";
-import MatterWorld from "../components/MatterWorld.astro";
-import { works } from "../staticData";
-import WorkItem from "../components/WorkItem.astro";
+import { entries, RESUME_PDF, EMAIL } from "../data/work";
+const groups = [...new Set(entries.map((e) => e.group))];
+const title = "Tochi Bedford · Senior software engineer";
+const ME = new Set(["about", "resume", "hello"]); // live in the header, not the project list
+const description =
+  "Portfolio of Tochukwu Bedford, a senior software engineer in Los Angeles. Type to play. Spell a project to open it.";
 ---
 
-<HeroLayout>
-  <main class="py-10 sm:px-10 sm:p-10 text-left ubuntu_mono_font">
-    <section class="px-2 lg:px-16 md:px-8 text-xl">
-      <div class="w-16 h-16 overflow-hidden rounded-md float-left my-1 mr-2">
-        <img src="/tochi.jpg" alt="profile image" class="saturate-0" />
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#1a2cf0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <canvas id="stage" aria-hidden="true"></canvas>
+    <input id="ghost" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type to play" />
+
+    <div class="chrome">
+      <header class="top">
+        <div class="who">
+          <h1 class="name">Tochi Bedford</h1>
+          <p class="sub">Senior software engineer · Los Angeles</p>
+          <div class="controls">
+          <button id="sound" class="pill" type="button" aria-pressed="true">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                ><path d="M4 9v6h4l5 4V5L8 9H4z"></path><path class="wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path></svg
+              >
+              <span class="label">Sound on</span>
+            </button>
+            <button id="ambience" class="pill" type="button" aria-pressed="true">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                ><path d="M3 12c2.5-4 5-4 7.5 0s5 4 7.5 0 2.5-2 3-2"></path><path class="wave" d="M3 17c2.5-3 5-3 7.5 0s5 3 7.5 0"></path></svg
+              >
+              <span class="label">Ambience on</span>
+            </button>
+          </div>
+        </div>
+        <nav class="me" aria-label="About me">
+          <div class="key-readout" aria-live="polite">
+            <span>F minor</span><span class="dot">·</span><span id="chord">Fm9</span>
+          </div>
+          <div class="me-words">
+            {["about", "resume", "hello"].map((w) => <button class="word me-word" type="button" data-word={w}>{w}</button>)}
+          </div>
+        </nav>
+      </header>
+
+      <div class="prompt">
+        <h2>Type anything.</h2>
+        <p><span class="desk">Every key is a note. </span>Spell a project to open it.</p>
       </div>
-       I am a developer based in Los Angeles, California working on web apps, tools and
-      services for everyday consumers and other developers like myself. I am an
-      open-source contributor, especially when it comes to <a
-        class="font-bold underline"
-        href="/tools">tools I use</a
-      >.
-      <br />
-       I've worked on everything from consumer facing production-ready
-      applications with thousands of users to hobby tools and templates used by
-      a few dozen people, check out my highlights below.
-    </section>
-    <h2
-      class="lg:px-8 md:px-0 md:text-left text-center px-2 mt-10 vina_font text-5xl py-5 text-tMenuDark"
-    >
-      highlights
-    </h2>
-    <section class="lg:px-8 md:px-0 px-2 overflow-auto py-2 text-left">
-      <div id="highlightsSection" class="isolate group">
+
+      <div class="bottom">
+        <div class="buffer" aria-hidden="true"><bdi id="buf"></bdi><span class="caret"></span></div>
+        <nav class="index" aria-label="Projects">
+          <p class="index-head">
+            <span class="lead lead-before">Or play one of these,</span><span class="lead lead-after">Type anything, play one of these,</span>
+            or <button id="openlist" class="textbtn" type="button">read it as a list</button>.
+          </p>
+          <div class="words">
+            {entries.filter((e) => !ME.has(e.word)).map((e) => <button class="word" type="button" data-word={e.word}>{e.word}</button>)}
+            <button class="typebtn" id="typebtn" type="button">Open keyboard</button>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <aside class="card" id="card" aria-hidden="true" aria-labelledby="cardtitle" inert>
+      <div class="card-top">
+        <span id="cardword"></span>
+        <button class="close" id="close" type="button">Close · Esc</button>
+      </div>
+      <div id="cardbody"></div>
+    </aside>
+
+    <dialog id="list" aria-labelledby="listtitle">
+      <div class="list-inner">
+        <div class="list-top">
+          <h2 id="listtitle">Tochi Bedford</h2>
+          <button id="closelist" class="close" type="button">Back to the instrument</button>
+        </div>
+        <p class="list-lede">
+          Senior software engineer in Los Angeles. Writing code since 2017, across web, mobile, desktop and backend, in healthcare,
+          fintech and music.
+        </p>
+        <p class="list-contact">
+          <a href={RESUME_PDF}>Résumé (PDF)</a> · <span>{EMAIL}</span> · <a href="https://github.com/tochibedford">GitHub</a> ·
+          <a href="https://www.linkedin.com/in/tochukwu-bedford/">LinkedIn</a>
+        </p>
         {
-          works.map((work, index, arr) => {
-            return <WorkItem work={work} index={index} arr={arr} />;
-          })
+          groups.map((g) => (
+            <section class="list-group">
+              <h3>{g}</h3>
+              {entries
+                .filter((e) => e.group === g && e.word !== "resume" && e.word !== "hello")
+                .map((e) => (
+                  <article id={`list-${e.word}`}>
+                    <div class="art-head">
+                      <h4>{e.title}</h4>
+                      <span class="art-meta">{e.meta}</span>
+                    </div>
+                    {e.body.map((p) => <p>{p}</p>)}
+                    {e.stack && <p class="art-stack">{e.stack.join(" · ")}</p>}
+                    {e.links && (
+                      <p class="art-links">
+                        {e.links.map((l) => (
+                          <a href={l.href}>{l.label} ↗</a>
+                        ))}
+                      </p>
+                    )}
+                    <button class="textbtn" type="button" data-word={e.word}>Play “{e.word}”</button>
+                  </article>
+                ))}
+            </section>
+          ))
         }
       </div>
-    </section>
-    <section class="lg:px-8 md:px-0 px-2 pt-5 relative">
-      <div class="relative">
-        <MatterWorld />
-        <div
-          id="nunText"
-          class="uppsercase opacity-0 pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-center"
-        >
-          NUN' TOO MUCH
-        </div>
-        <div
-          id="hitMeUpText"
-          class="opacity-0 uppercase pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-bold text-center"
-        >
-          Hit Me Up
-        </div>
-        <div
-          aria-label="tochibedford.work@gmail.com"
-          id="emailText"
-          class="opacity-0 pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:text-5xl text-3xl font-bold text-center"
-        >
-          tochibedford.work [at] gmail.com
-        </div>
-        <div
-          aria-label="tochibedford.work@gmail.com"
-          id="emailText"
-          class="pointer-events-none rotate-180 origin-center absolute left-1/2 -translate-x-1/2 bottom-20 w-full text-5xl font-bold text-center"
-        >
-          <span class="animate-bounce inline-block text-5xl font-normal mx-auto"
-            >^</span
-          >
-        </div>
-      </div>
-      <div class="w-max mt-5 mx-auto">
-        <button
-          class="p-2 text-2xl border-tBlack border rounded-lg hover:scale-95 transition-transform relative"
-          id="copyButton"
-        >
-          <span id="copyText" class="inline-block">Copy E-mail</span>
-          <span
-            id="okText"
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none inline-block opacity-0"
-            >✅</span
-          >
-        </button>
-        <a
-          href="mailto:tochibedford.work@gmail.com?subject=Hey%20Tochi%20👋🏽"
-          class="inline-block p-2 text-2xl border-tBlack border bg-tBlack text-tWhite rounded-lg hover:scale-95 transition-transform"
-          id="sendButton">Send E-mail</a
-        >
-      </div>
-    </section>
-  </main>
-</HeroLayout>
+    </dialog>
 
-<script>
-  let frameNum: number;
+    <noscript>
+      <p class="noscript">This page is an instrument and needs JavaScript. <a href={RESUME_PDF}>Here's the résumé</a> instead.</p>
+    </noscript>
 
-  function handleWorkAnim() {
-    const highlightsSection = document.getElementById("highlightsSection");
-    const workItems = document.querySelectorAll<HTMLDivElement>(
-      ".highlightedWorkItem"
-    );
+    <script>
+      import { boot } from "../scripts/instrument";
+      boot();
+    </script>
 
-    const animationFrame = () => {
-      if (highlightsSection && highlightsSection?.matches(":hover")) {
-        workItems.forEach((item) => {
-          item.style.scale = "1";
-          item.style.opacity = "1";
-          item.style.height = "auto";
-        });
-      } else {
-        highlightsSection?.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: "smooth",
-        });
-        workItems.forEach((item) => {
-          const minScale = item.getAttribute("data-min-scale")!;
-          const minOpacity = item.getAttribute("data-min-opacity")!;
-          item.style.height = "16rem";
-          item.style.scale = minScale;
-          item.style.opacity = minOpacity;
-        });
+    <style is:global>
+      /* Layout: the whole screen is the instrument. Three bands, one per keyboard row.
+         Chrome sits on top: name and sound controls up top, typed buffer and word index below. */
+      :root {
+        --ground: #1a2cf0;
+        --chalk: #f4f2ec;
+        --blush: #ffb9cc;
+        --deep: #08104f;
+        --pow-yellow: #ffd84a; /* comic hits only */
+        --pow-red: #ff4b3e;
+        --card: #f4f2ec;
+        --card-ink: #0b0f2e;
+        --card-dim: #4a5070;
+        --display: "Unbounded", "Arial Black", sans-serif;
+        --mono: "DM Mono", ui-monospace, Menlo, monospace;
+        --body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+        color-scheme: dark;
       }
-      frameNum = requestAnimationFrame(animationFrame);
-    };
-    frameNum = requestAnimationFrame(animationFrame);
-  }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body { background: var(--ground); color: var(--chalk); font-family: var(--body); overflow: hidden; }
+      a { color: inherit; }
+      #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: text; touch-action: manipulation; }
+      #ghost { position: fixed; left: -9999px; top: 0; opacity: 0; width: 1px; height: 1px; }
 
-  document.addEventListener("astro:after-swap", () => {
-    cancelAnimationFrame(frameNum);
-    handleWorkAnim();
-  });
-  document.addEventListener(
-    "astro:page-load",
-    () => {
-      cancelAnimationFrame(frameNum);
-      handleWorkAnim();
-    },
-    { once: true }
-  );
-</script>
+      .chrome {
+        position: fixed; inset: 0; pointer-events: none; display: grid; grid-template-rows: auto 1fr auto;
+        padding: calc(env(safe-area-inset-top, 0px) + clamp(16px, 2.4vw, 32px)) clamp(16px, 2.4vw, 32px)
+          calc(env(safe-area-inset-bottom, 0px) + clamp(16px, 2.4vw, 28px));
+      }
+      .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+      .who { display: grid; gap: 0; }
+      .who .controls { justify-content: flex-start; margin-top: 14px; }
+      .me { pointer-events: auto; display: grid; justify-items: end; gap: 10px; }
+      .me-words { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+      .lead-after { display: none; }
+      body.played .lead-before { display: none; }
+      body.played .lead-after { display: inline; animation: leadin 0.5s ease both; }
+      @keyframes leadin { from { opacity: 0; transform: translateY(4px); } }
+      .name { font-family: var(--display); font-weight: 800; font-size: clamp(22px, 2.8vw, 36px); line-height: 0.95; letter-spacing: -0.02em; margin: 0; }
+      .sub { margin: 0.45em 0 0; font-size: clamp(13px, 1.1vw, 15px); opacity: 0.9; }
+      .controls { pointer-events: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+      .key-readout { font-family: var(--mono); font-size: 12px; display: flex; gap: 6px; opacity: 0.9; font-variant-numeric: tabular-nums; }
+      .pill {
+        font-family: var(--mono); font-size: 13px; color: var(--chalk); background: transparent; border: 1.5px solid var(--chalk);
+        border-radius: 999px; padding: 0 14px; min-height: 38px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none;
+      }
+      .pill:hover { background: color-mix(in oklab, var(--chalk) 14%, transparent); }
+      .pill.solid { background: var(--chalk); color: var(--ground); }
+      .pill.solid:hover { background: var(--blush); border-color: var(--blush); }
+      .pill[aria-pressed="false"] .wave { display: none; }
+      .pill[aria-pressed="false"] { opacity: 0.75; }
 
-<script>
-  import { gsap } from "gsap";
-  import ScrollTrigger from "gsap/ScrollTrigger";
-  function animateText() {
-    gsap.registerPlugin(ScrollTrigger);
+      .prompt { align-self: center; justify-self: center; text-align: center; transition: opacity 0.4s; }
+      .prompt h2 { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 10vw, 150px); line-height: 0.85; letter-spacing: -0.04em; margin: 0; text-wrap: balance; }
+      .prompt p { font-family: var(--mono); font-size: 14px; margin: 18px 0 0; }
+      body.played .prompt { opacity: 0; }
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#nunText",
-      },
-    });
-    tl.fromTo(
-      "#nunText",
-      { x: -50, opacity: 0 },
-      { x: 0, opacity: 1, delay: 1, duration: 0.5 }
-    )
-      .to("#nunText", {
-        y: -50,
-        opacity: 0,
-        delay: 1.5,
-        duration: 0.5,
-      })
-      .fromTo(
-        "#hitMeUpText",
-        {
-          y: 50,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.3,
-        },
-        "-=0.5"
-      )
-      .to("#hitMeUpText", {
-        y: -50,
-        opacity: 0,
-        duration: 0.3,
-        delay: 2,
-      })
-      .fromTo(
-        "#emailText",
-        {
-          y: 50,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.3,
-        },
-        "-=0.3"
-      );
-  }
-  document.addEventListener("astro:after-swap", animateText);
-  document.addEventListener("astro:page-load", animateText, { once: true });
-</script>
+      .bottom { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; }
+      .buffer { font-family: var(--display); font-weight: 500; font-size: clamp(22px, 3.4vw, 44px); white-space: nowrap; overflow: hidden; min-height: 1.2em; }
+      .buffer .caret { display: inline-block; width: 0.08em; height: 0.9em; background: var(--chalk); vertical-align: -0.08em; margin-left: 0.05em; animation: blink 1s steps(1) infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+      .index { pointer-events: auto; max-width: min(620px, 62vw); display: grid; gap: 8px; }
+      .index-head { margin: 0; text-align: right; font-family: var(--mono); font-size: 12.5px; }
+      .index-head .textbtn { font-size: inherit; }
+      .words { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+      .word { font-family: var(--mono); font-size: 13px; color: var(--chalk); background: transparent; border: 1.5px solid var(--chalk); border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 36px; }
+      .word:hover, .word.found { background: var(--chalk); color: var(--ground); }
+      .textbtn { font: inherit; color: inherit; background: none; border: none; padding: 4px 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+      .typebtn { display: none; font-family: var(--mono); font-size: 13px; background: var(--blush); color: var(--deep); border: none; border-radius: 999px; padding: 0 16px; min-height: 44px; }
+      :focus-visible { outline: 3px solid var(--blush); outline-offset: 2px; }
 
-<script>
-  import { gsap } from "gsap";
-  function handleCopy() {
-    const copyButtonClicked = gsap.timeline({
-      onComplete: () => {
-        copyButton.disabled = true;
-      },
-      onReverseComplete: () => {
-        copyButton.disabled = false;
-      },
-    });
+      /* card */
+      .card {
+        position: fixed; top: 0; right: 0; height: 100%; width: min(560px, 100%); background: var(--card); color: var(--card-ink);
+        padding: calc(env(safe-area-inset-top, 0px) + 24px) clamp(20px, 3vw, 44px) calc(env(safe-area-inset-bottom, 0px) + 28px);
+        overflow-y: auto; transform: translateX(102%); transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+        display: flex; flex-direction: column; gap: 16px; visibility: hidden;
+        transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s 0.45s;
+      }
+      .card.open { transform: none; visibility: visible; transition-delay: 0s; box-shadow: -30px 0 60px -30px rgba(8, 16, 79, 0.6); }
+      .card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: var(--mono); font-size: 12px; color: var(--card-dim); }
+      .close { font-family: var(--mono); font-size: 12px; background: none; border: 1.5px solid currentColor; color: inherit; border-radius: 999px; padding: 0 14px; min-height: 38px; cursor: pointer; }
+      .card .close { color: var(--card-ink); }
+      #cardbody { display: flex; flex-direction: column; gap: 14px; }
+      #cardbody .meta { font-family: var(--mono); font-size: 12.5px; margin: 0; color: var(--card-dim); }
+      #cardbody h2 { font-family: var(--display); font-weight: 900; font-size: clamp(38px, 5.4vw, 66px); line-height: 0.9; letter-spacing: -0.04em; margin: 0 0 4px; overflow-wrap: anywhere; color: var(--ground); }
+      #cardbody p { margin: 0; font-size: 17px; line-height: 1.55; max-width: 62ch; }
+      #cardbody p.note { font-size: 14.5px; color: var(--card-dim); }
+      #cardbody .tags { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+      #cardbody .tags li { font-family: var(--mono); font-size: 12px; background: color-mix(in oklab, var(--ground) 11%, var(--card)); padding: 4px 9px; border-radius: 999px; }
+      #cardbody .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; }
+      #cardbody .links a { color: var(--ground); font-weight: 600; text-underline-offset: 3px; }
+      #cardbody .mailrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+      #cardbody .mail { font-family: var(--display); font-weight: 600; font-size: clamp(18px, 2.2vw, 24px); word-break: break-all; user-select: all; }
+      #cardbody .copy { font-family: var(--mono); font-size: 12px; background: var(--ground); color: var(--chalk); border: none; border-radius: 999px; padding: 0 14px; min-height: 36px; cursor: pointer; }
 
-    const copyButton =
-      document.querySelector<HTMLButtonElement>("#copyButton")!;
-    const copyText = document.querySelector<HTMLButtonElement>("#copyText")!;
-    const okText = document.querySelector<HTMLButtonElement>("#okText")!;
-    copyButtonClicked
-      .to(copyText, {
-        y: -20,
-        opacity: 0,
-        duration: 0.1,
-        ease: "expo.inOut",
-        onComplete: () => {
-          copyText.hidden = true;
-        },
-      })
-      .fromTo(
-        okText,
-        {
-          y: 20,
-          ease: "expo.inOut",
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.1,
-          ease: "expo.inOut",
-          onReverseComplete: () => {
-            copyText.hidden = false;
-          },
-        }
-      )
-      .pause();
-    copyButton.onclick = () => {
-      navigator.clipboard
-        .writeText("tochibedford.work@gmail.com")
-        .then(() => {
-          copyButtonClicked.play();
-          setTimeout(() => {
-            copyButtonClicked.reverse();
-          }, 3000);
-        })
-        .catch((res) => {
-          console.error(res);
-        });
-    };
-  }
-  document.addEventListener("astro:after-swap", handleCopy);
-  document.addEventListener("astro:page-load", handleCopy, { once: true });
-</script>
+      /* list view: the plain-portfolio reading of the same content */
+      dialog#list { border: none; padding: 0; margin: 0; width: 100%; max-width: 100%; height: 100%; max-height: 100%; background: var(--card); color: var(--card-ink); }
+      dialog#list::backdrop { background: var(--ground); }
+      .list-inner { max-width: 780px; margin: 0 auto; padding: calc(env(safe-area-inset-top, 0px) + 28px) 20px calc(env(safe-area-inset-bottom, 0px) + 64px); }
+      .list-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; position: sticky; top: 0; background: var(--card); padding: 12px 0; z-index: 1; }
+      .list-top h2 { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.03em; margin: 0; color: var(--ground); }
+      .list-lede { font-size: 20px; line-height: 1.45; max-width: 60ch; }
+      .list-contact { font-family: var(--mono); font-size: 13px; color: var(--card-dim); }
+      .list-contact a { color: var(--ground); }
+      .list-group { margin-top: 44px; }
+      .list-group h3 { font-family: var(--mono); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--card-dim); border-bottom: 1.5px solid var(--card-ink); padding-bottom: 8px; margin: 0 0 8px; }
+      .list-group article { padding: 18px 0 20px; border-bottom: 1px solid color-mix(in oklab, var(--card-ink) 18%, var(--card)); }
+      .art-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; }
+      .art-head h4 { font-family: var(--display); font-weight: 700; font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+      .art-meta { font-family: var(--mono); font-size: 12px; color: var(--card-dim); }
+      .list-group p { font-size: 16px; line-height: 1.55; margin: 10px 0 0; max-width: 66ch; }
+      .art-stack { font-family: var(--mono); font-size: 12.5px; color: var(--card-dim); }
+      .art-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+      .art-links a { color: var(--ground); font-weight: 600; }
+      .list-group .textbtn { margin-top: 10px; font-family: var(--mono); font-size: 12px; color: var(--card-dim); }
+      .noscript { position: fixed; inset: auto 16px 16px 16px; background: var(--chalk); color: var(--deep); padding: 16px; border-radius: 12px; }
+
+      @media (max-width: 760px) {
+        .bottom { grid-template-columns: 1fr; }
+        .index { max-width: none; }
+        .index-head, .words { justify-content: flex-start; }
+        .typebtn { display: inline-block; }
+        .key-readout { display: none; }
+        .prompt p .desk { display: none; }
+        .me { justify-items: start; }
+        .me-words { justify-content: flex-start; }
+        .index-head { text-align: left; }
+      }
+      @media (hover: none) { .prompt p .desk { display: none; } }
+      @media (prefers-reduced-motion: reduce) {
+        .card { transition: none; }
+        .buffer .caret { animation: none; }
+      }
+    </style>
+  </body>
+</html>

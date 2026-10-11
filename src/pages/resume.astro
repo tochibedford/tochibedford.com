@@ -1,5 +1,15 @@
 ---
-import HeroLayout from "../layouts/HeroLayout.astro";
+import { RESUME_PDF } from "../data/work";
 ---
 
-<HeroLayout />
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0; url=${RESUME_PDF}`} />
+    <title>Tochukwu Bedford · Résumé</title>
+    <link rel="canonical" href={RESUME_PDF} />
+  </head>
+  <body style="background:#1a2cf0;color:#f4f2ec;font-family:system-ui,sans-serif;padding:24px">
+    <p>Opening the résumé. <a href={RESUME_PDF} style="color:inherit">Open it here</a> if nothing happens.</p>
+  </body>
+</html>
