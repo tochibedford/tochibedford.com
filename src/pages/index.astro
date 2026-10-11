@@ -1,6 +1,7 @@
 ---
-import { entries, RESUME_PDF, EMAIL } from "../data/work";
-const groups = [...new Set(entries.map((e) => e.group))];
+import { entries, GROUPS, RESUME_PDF, EMAIL } from "../data/work";
+const groups = GROUPS.filter((g) => entries.some((e) => e.group === g));
+const workGroups = groups.filter((g) => g !== "Me");
 const title = "Tochi Bedford · Senior software engineer";
 const ME = new Set(["about", "resume", "hello"]); // live in the header, not the project list
 const description =
@@ -71,10 +72,23 @@ const description =
             <span class="lead lead-before">Or play one of these,</span><span class="lead lead-after">Type anything, play one of these,</span>
             or <button id="openlist" class="textbtn" type="button">read it as a list</button>.
           </p>
-          <div class="words">
-            {entries.filter((e) => !ME.has(e.word)).map((e) => <button class="word" type="button" data-word={e.word}>{e.word}</button>)}
-            <button class="typebtn" id="typebtn" type="button">Open keyboard</button>
+          <div class="groups">
+            {
+              workGroups.map((g) => (
+                <div class="grp">
+                  <span class="grp-label">{g}</span>
+                  {entries
+                    .filter((e) => e.group === g)
+                    .map((e) => (
+                      <button class="word" type="button" data-word={e.word}>
+                        {e.word}
+                      </button>
+                    ))}
+                </div>
+              ))
+            }
           </div>
+          <button class="typebtn" id="typebtn" type="button">Open keyboard</button>
         </nav>
       </div>
     </div>
@@ -113,7 +127,7 @@ const description =
                       <h4>{e.title}</h4>
                       <span class="art-meta">{e.meta}</span>
                     </div>
-                    {e.body.map((p) => <p>{p}</p>)}
+                    {e.body.map((p) => <p set:html={p} />)}
                     {e.stack && <p class="art-stack">{e.stack.join(" · ")}</p>}
                     {e.links && (
                       <p class="art-links">
@@ -205,7 +219,9 @@ const description =
       .index { pointer-events: auto; max-width: min(620px, 62vw); display: grid; gap: 8px; }
       .index-head { margin: 0; text-align: right; font-family: var(--mono); font-size: 12.5px; }
       .index-head .textbtn { font-size: inherit; }
-      .words { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+      .groups { display: grid; gap: 7px; justify-items: end; }
+      .grp { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; }
+      .grp-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; margin-right: 4px; }
       .word { font-family: var(--mono); font-size: 13px; color: var(--chalk); background: transparent; border: 1.5px solid var(--chalk); border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 36px; }
       .word:hover, .word.found { background: var(--chalk); color: var(--ground); }
       .textbtn { font: inherit; color: inherit; background: none; border: none; padding: 4px 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
@@ -229,6 +245,8 @@ const description =
       #cardbody h2 { font-family: var(--display); font-weight: 900; font-size: clamp(38px, 5.4vw, 66px); line-height: 0.9; letter-spacing: -0.04em; margin: 0 0 4px; overflow-wrap: anywhere; color: var(--ground); }
       #cardbody p { margin: 0; font-size: 17px; line-height: 1.55; max-width: 62ch; }
       #cardbody p.note { font-size: 14.5px; color: var(--card-dim); }
+      #cardbody p a, .list-group p a { color: var(--ground); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+      #cardbody p a:hover, .list-group p a:hover { text-decoration-thickness: 3px; }
       #cardbody .tags { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
       #cardbody .tags li { font-family: var(--mono); font-size: 12px; background: color-mix(in oklab, var(--ground) 11%, var(--card)); padding: 4px 9px; border-radius: 999px; }
       #cardbody .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; }
@@ -262,7 +280,9 @@ const description =
       @media (max-width: 760px) {
         .bottom { grid-template-columns: 1fr; }
         .index { max-width: none; }
-        .index-head, .words { justify-content: flex-start; }
+        .groups { justify-items: start; max-height: 46vh; overflow-y: auto; }
+        .grp { justify-content: flex-start; }
+        .typebtn { justify-self: start; }
         .typebtn { display: inline-block; }
         .key-readout { display: none; }
         .prompt p .desk { display: none; }
