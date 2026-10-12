@@ -2,6 +2,7 @@
 import { entries, GROUPS, RESUME_PDF, EMAIL } from "../data/work";
 const groups = GROUPS.filter((g) => entries.some((e) => e.group === g));
 const workGroups = groups.filter((g) => g !== "Me");
+const about = entries.find((e) => e.word === "about")!;
 const title = "Tochi Bedford · Senior software engineer";
 const ME = new Set(["about", "resume", "hello"]); // live in the header, not the project list
 const description =
@@ -61,18 +62,18 @@ const description =
       </header>
 
       <div class="prompt">
-        <h2>Type anything.</h2>
-        <p><span class="desk">Every key is a note. </span>Spell a project to open it.</p>
+        <h2><span class="desk-only">Type anything.</span><span class="touch-only"><span class="when-locked">Tap anywhere to turn the sound on.</span><span class="when-live">Tap or swipe anywhere.</span></span></h2>
+        <p><span class="desk-only"><span class="desk">Every key is a note. </span>Spell a project to open it.</span><span class="touch-only"><span class="when-locked">Then tap or swipe to play. Spell a project to open it.</span><span class="when-live">Every letter is a note. Spell a project to open it.</span></span></p>
       </div>
 
       <div class="bottom">
-        <div class="buffer" aria-hidden="true"><bdi id="buf"></bdi><span class="caret"></span></div>
+        <div class="buffer" aria-hidden="true"><span class="bufline"><bdi id="buf"></bdi><span class="caret"></span></span></div>
         <nav class="index" aria-label="Projects">
           <p class="index-head">
             <span class="lead lead-before">Or play one of these,</span><span class="lead lead-after">Type anything, play one of these,</span>
             or <button id="openlist" class="textbtn" type="button">read it as a list</button>.
           </p>
-          <div class="groups">
+          <div class="groups inline-groups">
             {
               workGroups.map((g) => (
                 <div class="grp">
@@ -88,10 +89,47 @@ const description =
               ))
             }
           </div>
-          <button class="typebtn" id="typebtn" type="button">Open keyboard</button>
         </nav>
+        <div class="mobilebar">
+          <div class="mobilebar-row">
+            <button id="projbtn" class="projbtn" type="button" aria-expanded="false" aria-controls="sheet">
+              <span>Projects</span><span class="count">{entries.filter((e) => !ME.has(e.word)).length}</span>
+              <svg class="up" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 15l6-6 6 6"></path></svg>
+            </button>
+          </div>
+          <p class="mobilebar-hint"><span class="desk-only">Type anything</span><span class="touch-only">Tap or swipe to play</span>, open Projects, or <button class="textbtn" type="button" data-openlist>read it as a list</button>.</p>
+        </div>
       </div>
     </div>
+
+    <div class="scrim" id="scrim"></div>
+    <section class="sheet" id="sheet" aria-label="Projects" aria-hidden="true" inert>
+      <div class="sheet-grab" id="sheetgrab">
+        <span class="handle" aria-hidden="true"></span>
+        <div class="sheet-head">
+          <h2>Projects</h2>
+          <button class="close sheet-close" id="sheetclose" type="button">Close</button>
+        </div>
+        <p class="sheet-hint">Tap one to play it.</p>
+      </div>
+      <div class="groups sheet-groups">
+        {
+          workGroups.map((g) => (
+            <div class="grp">
+              <span class="grp-label">{g}</span>
+              {entries
+                .filter((e) => e.group === g)
+                .map((e) => (
+                  <button class="word" type="button" data-word={e.word}>
+                    {e.word}
+                  </button>
+                ))}
+            </div>
+          ))
+        }
+      </div>
+      <button class="textbtn sheet-list" type="button" data-openlist>Read it as a list</button>
+    </section>
 
     <aside class="card" id="card" aria-hidden="true" aria-labelledby="cardtitle" inert>
       <div class="card-top">
@@ -107,16 +145,21 @@ const description =
           <h2 id="listtitle">Tochi Bedford</h2>
           <button id="closelist" class="close" type="button">Back to the instrument</button>
         </div>
-        <p class="list-lede">
-          Senior software engineer in Los Angeles. Writing code since 2017, across web, mobile, desktop and backend, in healthcare,
-          fintech and music.
-        </p>
-        <p class="list-contact">
-          <a href={RESUME_PDF}>Résumé (PDF)</a> · <span>{EMAIL}</span> · <a href="https://github.com/tochibedford">GitHub</a> ·
-          <a href="https://www.linkedin.com/in/tochukwu-bedford/">LinkedIn</a>
-        </p>
+        <section class="list-group list-about" id="list-about">
+          <h3>Me</h3>
+          {about.body.map((p) => <p set:html={p} />)}
+          <p class="list-lede">
+            <span class="tldr">TL;DR</span> Senior software engineer in Los Angeles. Writing code since 2017, across web, mobile,
+            desktop and backend, in healthcare, fintech and music.
+          </p>
+          <p class="list-contact">
+            <a href={RESUME_PDF}>Résumé (PDF)</a> · <span>{EMAIL}</span> · <a href="https://github.com/tochibedford">GitHub</a> ·
+            <a href="https://www.linkedin.com/in/tochukwu-bedford/">LinkedIn</a> · <a href="https://x.com/TochiBedford">X</a>
+          </p>
+          <button class="textbtn" type="button" data-word="about">Play “about”</button>
+        </section>
         {
-          groups.map((g) => (
+          workGroups.map((g) => (
             <section class="list-group">
               <h3>{g}</h3>
               {entries
@@ -183,11 +226,11 @@ const description =
       html, body { height: 100%; margin: 0; }
       body { background: var(--ground); color: var(--chalk); font-family: var(--body); overflow: hidden; }
       a { color: inherit; }
-      #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: text; touch-action: manipulation; }
+      #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; background: var(--ground); cursor: text; touch-action: none; }
       #ghost { position: fixed; left: -9999px; top: 0; opacity: 0; width: 1px; height: 1px; }
 
       .chrome {
-        position: fixed; inset: 0; pointer-events: none; display: grid; grid-template-rows: auto 1fr auto;
+        position: fixed; inset: 0; pointer-events: none; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr);
         padding: calc(env(safe-area-inset-top, 0px) + clamp(16px, 2.4vw, 32px)) clamp(16px, 2.4vw, 32px)
           calc(env(safe-area-inset-bottom, 0px) + clamp(16px, 2.4vw, 28px));
       }
@@ -220,7 +263,9 @@ const description =
       body.played .prompt { opacity: 0; }
 
       .bottom { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; }
-      .buffer { font-family: var(--display); font-weight: 500; font-size: clamp(22px, 3.4vw, 44px); white-space: nowrap; overflow: hidden; min-height: 1.2em; }
+      /* long runs never widen the page: the oldest letters slide off the left edge and the newest stay in view */
+      .buffer { font-family: var(--display); font-weight: 500; font-size: clamp(22px, 3.4vw, 44px); white-space: nowrap; overflow: hidden; min-height: 1.2em; min-width: 0; max-width: 100%; direction: rtl; text-align: left; }
+      .bufline { direction: ltr; unicode-bidi: isolate; }
       .buffer .caret { display: inline-block; width: 0.08em; height: 0.9em; background: var(--chalk); vertical-align: -0.08em; margin-left: 0.05em; animation: blink 1s steps(1) infinite; }
       @keyframes blink { 50% { opacity: 0; } }
       .index { pointer-events: auto; max-width: min(620px, 62vw); display: grid; gap: 8px; }
@@ -232,7 +277,9 @@ const description =
       .word { font-family: var(--mono); font-size: 13px; color: var(--chalk); background: transparent; border: 1.5px solid var(--chalk); border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 36px; }
       .word:hover, .word.found { background: var(--chalk); color: var(--ground); }
       .textbtn { font: inherit; color: inherit; background: none; border: none; padding: 4px 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-      .typebtn { display: none; font-family: var(--mono); font-size: 13px; background: var(--blush); color: var(--deep); border: none; border-radius: 999px; padding: 0 16px; min-height: 44px; }
+      .touch-only { display: none; }
+      @media (hover: none) { .touch-only { display: inline; } .desk-only { display: none; } }
+      body.locked .when-live, body:not(.locked) .when-locked { display: none; }
       :focus-visible { outline: 3px solid var(--blush); outline-offset: 2px; }
 
       /* card */
@@ -249,7 +296,7 @@ const description =
       .card .close { color: var(--card-ink); }
       #cardbody { display: flex; flex-direction: column; gap: 14px; }
       #cardbody .meta { font-family: var(--mono); font-size: 12.5px; margin: 0; color: var(--card-dim); }
-      #cardbody h2 { font-family: var(--display); font-weight: 900; font-size: clamp(38px, 5.4vw, 66px); line-height: 0.9; letter-spacing: -0.04em; margin: 0 0 4px; overflow-wrap: anywhere; color: var(--ground); }
+      #cardbody h2 { font-family: var(--display); font-weight: 900; font-size: clamp(38px, 5.4vw, 66px); line-height: 0.9; letter-spacing: -0.04em; margin: 0 0 4px; overflow-wrap: normal; word-break: normal; hyphens: manual; color: var(--ground); }
       #cardbody p { margin: 0; font-size: 17px; line-height: 1.55; max-width: 62ch; }
       #cardbody p.note { font-size: 14.5px; color: var(--card-dim); }
       #cardbody p a, .list-group p a { color: var(--ground); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
@@ -277,6 +324,12 @@ const description =
       .list-contact { font-family: var(--mono); font-size: 13px; color: var(--card-dim); }
       .list-contact a { color: var(--ground); }
       .list-group { margin-top: 44px; }
+      .list-about { margin-top: 20px; }
+      .list-about .list-lede { margin: 22px 0 0; font-size: 20px; }
+      .list-about .list-contact { margin: 12px 0 6px; font-size: 13px; max-width: none; }
+      @media (max-width: 760px) { .list-about .list-lede { font-size: 18px; } }
+      .list-about .list-contact a { font-weight: 500; }
+      .tldr { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; vertical-align: 0.2em; background: var(--ground); color: var(--chalk); border-radius: 999px; padding: 3px 9px; margin-right: 6px; }
       .list-group h3 { font-family: var(--mono); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--card-dim); border-bottom: 1.5px solid var(--card-ink); padding-bottom: 8px; margin: 0 0 8px; }
       .list-group article { padding: 18px 0 20px; border-bottom: 1px solid color-mix(in oklab, var(--card-ink) 18%, var(--card)); }
       .art-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; }
@@ -289,19 +342,95 @@ const description =
       .list-group .textbtn { margin-top: 10px; font-family: var(--mono); font-size: 12px; color: var(--card-dim); }
       .noscript { position: fixed; inset: auto 16px 16px 16px; background: var(--chalk); color: var(--deep); padding: 16px; border-radius: 12px; }
 
-      @media (max-width: 760px) {
-        .bottom { grid-template-columns: 1fr; }
-        .index { max-width: none; }
-        .groups { justify-items: start; max-height: 46vh; overflow-y: auto; }
+      /* Phones, and any short screen (phone landscape): the project list gets whatever height is left
+         under the header and scrolls inside itself, so nothing is ever cut off. */
+      @media (max-width: 760px), (max-height: 520px) {
+        .chrome { grid-template-rows: auto auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
+        .prompt { align-self: start; padding-top: 2vh; }
+        body.played .prompt { display: none; }
+        /* pinned rows, so hiding the prompt after the first note doesn't pull the bar up the screen */
+        .prompt { grid-row: 2; }
+        .bottom { grid-row: 3; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 10px; min-height: 0; align-self: end; max-height: 100%; }
+        .buffer { flex: none; }
+        .index { max-width: none; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+        .groups { justify-items: start; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 2px; }
         .grp { justify-content: flex-start; }
-        .typebtn { justify-self: start; }
-        .typebtn { display: inline-block; }
+        .index-head { text-align: left; flex: none; }
+      }
+      @media (max-width: 760px) {
         .key-readout { display: none; }
         .prompt p .desk { display: none; }
         .me { justify-items: start; }
         .me-words { justify-content: flex-start; }
-        .index-head { text-align: left; }
       }
+      @media (max-width: 380px) {
+        .prompt h2 { font-size: 36px; }
+        .word { padding: 5px 10px; font-size: 12.5px; }
+        .grp-label { font-size: 10px; }
+      }
+      /* short screens (phone landscape): smaller prompt, header stays on two lines */
+      @media (max-height: 520px) {
+        .prompt { display: none; }
+        .lead-before { display: none; }
+        .lead-after { display: inline; }
+        .who .controls { margin-top: 8px; }
+      }
+      /* anything without a hardware keyboard (phones, tablets) gets the keyboard button */
+      /* phone bar + projects sheet (hidden on desktop) */
+      /* ghost pads on touch screens: barely there, drifting slowly */
+      .pads { position: fixed; inset: 0; pointer-events: none; }
+      .pad {
+        position: absolute; transform: translate(-50%, -50%); font-family: var(--display); font-weight: 600;
+        font-size: var(--pad-size, 28px); line-height: 1; text-transform: uppercase; color: var(--chalk); opacity: 0.07;
+        transition: opacity 0.9s ease;
+        animation: drift var(--dur, 12s) ease-in-out var(--delay, 0s) infinite alternate;
+      }
+      .pad.hit { animation: drift var(--dur, 12s) ease-in-out var(--delay, 0s) infinite alternate, padhit 0.7s ease-out; }
+      @keyframes drift {
+        0% { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg); }
+        33% { transform: translate(-50%, -50%) translate(var(--dx), calc(var(--dy) * -1)) rotate(var(--rot)); }
+        66% { transform: translate(-50%, -50%) translate(calc(var(--dx) * -0.6), calc(var(--dy) * 0.5)) rotate(calc(var(--rot) * -0.5)); }
+        100% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.4), var(--dy)) rotate(calc(var(--rot) * 0.3)); }
+      }
+      body.locked .pad { opacity: 0.03; }
+      @keyframes padhit { from { opacity: 0.35; } to { opacity: 0.07; } }
+      @media (prefers-reduced-motion: reduce) { .pad, .pad.hit { animation: none; } }
+      .mobilebar, .scrim, .sheet { display: none; }
+      .card { z-index: 30; }
+      @media (max-width: 760px), (max-height: 520px) {
+        .inline-groups, .index-head { display: none; }
+        .mobilebar { display: grid; gap: 10px; pointer-events: auto; }
+        .mobilebar-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .mobilebar-hint { margin: 0; font-family: var(--mono); font-size: 12.5px; }
+        .mobilebar-hint .textbtn { font-size: inherit; }
+        /* same family as the other pills, just filled so it reads as the main way in */
+        .projbtn { font-family: var(--mono); font-size: 14px; color: var(--ground); background: var(--chalk); border: 1.5px solid var(--chalk); border-radius: 999px; min-height: 44px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+        .projbtn:active { background: var(--blush); border-color: var(--blush); }
+        .projbtn .count { font-size: 12px; opacity: 0.6; }
+        .scrim { display: block; position: fixed; inset: 0; z-index: 19; background: rgba(8, 16, 79, 0.55); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .scrim.open { opacity: 1; pointer-events: auto; }
+        .sheet {
+          display: flex; flex-direction: column; position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; max-height: 80vh;
+          background: var(--deep); color: var(--chalk); border-radius: 22px 22px 0 0;
+          padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+          transform: translateY(105%); transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1); visibility: hidden;
+        }
+        .sheet.open { transform: none; visibility: visible; }
+        .sheet.dragging { transition: none; }
+        .sheet-grab { touch-action: none; padding-bottom: 6px; }
+        .handle { display: block; width: 44px; height: 5px; border-radius: 3px; background: color-mix(in oklab, var(--chalk) 45%, transparent); margin: 4px auto 10px; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; }
+        .sheet-head h2 { font-family: var(--display); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; margin: 0; }
+        .sheet-close { color: var(--chalk); }
+        .sheet-hint { margin: 6px 0 0; font-family: var(--mono); font-size: 12px; opacity: 0.8; }
+        .sheet-groups { overflow-y: auto; overscroll-behavior: contain; min-height: 0; padding: 10px 0; justify-items: start; gap: 10px; }
+        .sheet-groups .grp { justify-content: flex-start; }
+        .sheet-groups .grp-label { width: 100%; margin: 4px 0 0; }
+        .sheet-groups .word { min-height: 42px; padding: 6px 14px; font-size: 14px; }
+        .sheet-list { align-self: flex-start; font-family: var(--mono); font-size: 13px; color: var(--chalk); margin-top: 4px; }
+      }
+      @media (prefers-reduced-motion: reduce) { .sheet { transition: none; } }
+
       @media (hover: none) { .prompt p .desk { display: none; } }
       @media (prefers-reduced-motion: reduce) {
         .card { transition: none; }

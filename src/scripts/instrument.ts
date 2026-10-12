@@ -81,6 +81,11 @@ class Engine {
   padVoices: { src: AudioBufferSourceNode; gain: GainNode }[] = [];
   padTimer: number | undefined;
   lastByKey = new Map<string, { src: AudioBufferSourceNode; gain: GainNode }>();
+  /** The last note asked for while audio was still locked, so the first tap isn't silent. */
+  pending: { args: Parameters<Engine["hit"]>; at: number } | null = null;
+  /** Called once, the first time audio is actually running. */
+  onLive: (() => void) | null = null;
+  live = false;
   settings = readSettings();
 
   constructor() {
@@ -103,11 +108,43 @@ class Engine {
     }
   }
 
+  /**
+   * iPhones only let audio start from the end of a touch (touchend / click), never from the
+   * moment a finger lands. So this runs on every finger lift and key press until audio is live,
+   * and plays one silent sample, which is what actually wakes Safari's audio up.
+   */
+  unlock() {
+    this.ensure();
+    const ctx = this.ctx;
+    if (!ctx || ctx.state === "running") return;
+    try {
+      const s = ctx.createBufferSource();
+      s.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+      s.connect(ctx.destination);
+      s.start(0);
+    } catch {}
+    this.start();
+  }
+
   /** Must run inside a user gesture. */
   async start() {
+    // iPhones mute web audio when the ringer switch is on silent unless the page says it plays media
+    try {
+      const as = (navigator as any).audioSession;
+      if (as && as.type !== "playback") as.type = "playback";
+    } catch {}
     this.ensure();
     if (!this.ctx) return;
-    if (this.ctx.state === "suspended") await this.ctx.resume().catch(() => {});
+    if (this.ctx.state !== "running") await this.ctx.resume().catch(() => {});
+    if (this.ctx.state !== "running") return;
+    // the note that woke audio up plays now, if it was asked for a moment ago (a tap, not a long drag)
+    const p = this.pending;
+    this.pending = null;
+    if (p && performance.now() - p.at < 600) this.hit(...p.args);
+    if (!this.live) {
+      this.live = true;
+      this.onLive?.();
+    }
     if (!this.started) {
       this.started = true;
       this.padLoop(true);
@@ -159,6 +196,11 @@ class Engine {
     const ctx = this.ctx;
     const buf = this.buffers.get(sample);
     if (!ctx || !buf) return;
+    // while audio is still locked, notes would pile up and all fire at once later; keep only the latest
+    if (ctx.state !== "running") {
+      this.pending = { args: [sample, key, level, tone, rate], at: performance.now() };
+      return;
+    }
     const t = ctx.currentTime;
     // retriggering the same key: duck the previous note quickly so tails don't pile up
     const prev = this.lastByKey.get(key);
@@ -283,18 +325,40 @@ class Stage {
   // comics are drawn opaque on their own layer, then faded as one image
   layer = document.createElement("canvas");
   lcx = this.layer.getContext("2d")!;
+  // On touch screens a drag fires many notes at once, so every effect is drawn smaller there.
+  fx = matchMedia("(hover: none)").matches ? 0.5 : 1;
+  /** Where a key's effect should start, in CSS px (the pad you touched), if anywhere. */
+  anchor: ((ch: string) => { x: number; y: number } | null) | null = null;
 
   constructor(cv: HTMLCanvasElement) {
     this.cv = cv;
     this.cx = cv.getContext("2d")!;
     this.C = { ground: css("--ground"), chalk: css("--chalk"), blush: css("--blush"), deep: css("--deep"), yellow: css("--pow-yellow"), red: css("--pow-red") };
-    this.size();
-    addEventListener("resize", () => this.size());
+    // The blue comes from CSS, and the canvas only holds pixels while something is animating.
+    // iOS Safari throws away canvas memory when it's under pressure (lots of decoded audio here),
+    // and a canvas it has dropped shows up black. Releasing it while idle, and rebuilding it
+    // whenever the page comes back, means there's nothing for it to drop.
+    this.measure();
+    addEventListener("resize", () => (this.running ? this.size() : this.measure()));
+    const revive = () => {
+      if (document.hidden) return;
+      this.release();
+      if (this.things.length) this.size();
+    };
+    document.addEventListener("visibilitychange", revive);
+    addEventListener("pageshow", revive);
+    cv.addEventListener("contextrestored", revive);
+  }
+  /** Screen size in canvas pixels, kept current even while the canvas is released. */
+  measure() {
+    this.dpr = Math.min(2, devicePixelRatio || 1);
+    this.W = Math.round(innerWidth * this.dpr);
+    this.H = Math.round(innerHeight * this.dpr);
   }
   size() {
-    this.dpr = Math.min(2, devicePixelRatio || 1);
-    this.W = this.cv.width = innerWidth * this.dpr;
-    this.H = this.cv.height = innerHeight * this.dpr;
+    this.measure();
+    this.cv.width = this.W;
+    this.cv.height = this.H;
     this.layer.width = this.W;
     this.layer.height = this.H;
     // halftone dot tile, sized to the screen's pixel density
@@ -307,46 +371,59 @@ class Stage {
     tc.arc(n / 2, n / 2, n * 0.2, 0, Math.PI * 2);
     tc.fill();
     this.dots = this.lcx.createPattern(t, "repeat");
-    if (!this.running) this.clear();
+  }
+  /** Frees both canvases' memory. The CSS background shows through. */
+  release() {
+    this.cv.width = this.cv.height = 0;
+    this.layer.width = this.layer.height = 0;
   }
   clear() {
-    this.cx.fillStyle = this.C.ground;
-    this.cx.fillRect(0, 0, this.W, this.H);
+    this.cx.clearRect(0, 0, this.W, this.H);
   }
   kick() {
     if (!this.running) {
       this.running = true;
+      this.size();
       requestAnimationFrame(() => this.draw());
     }
   }
   spawn(ch: string, row: number, col: number) {
-    const { W, H, C } = this;
+    const { W, H, C, fx, dpr } = this;
+    const at = this.anchor?.(ch);
+    const size = Math.min(H * 0.34, W * 0.3) * fx;
     if (row === DRUM_ROW) {
       // drums: a thin column at the key's position, plus that drum's comic hit
-      const x = W * (0.06 + 0.88 * ((col + 0.5) / 10));
-      this.things.push({ kind: "col", x, w: W * (col === 0 ? 0.04 : 0.016), color: col % 2 ? C.blush : C.chalk, life: 1 });
+      const x = at ? at.x * dpr : W * (0.06 + 0.88 * ((col + 0.5) / 10));
+      this.things.push({ kind: "col", x, w: W * (col === 0 ? 0.04 : 0.016) * (fx < 1 ? 0.7 : 1), color: col % 2 ? C.blush : C.chalk, life: 1 });
       // the digit itself, big like the letters, above the comic hit
-      const dy = H * (0.42 + (Math.random() - 0.5) * 0.12);
-      this.things.push({ kind: "letter", ch, x, y: dy, color: C.chalk, life: 1, s: Math.min(H * 0.34, W * 0.3) });
-      this.drum(ch, x);
+      const dy = at ? at.y * dpr : H * (0.42 + (Math.random() - 0.5) * 0.12);
+      this.things.push({ kind: "letter", ch, x, y: dy, color: C.chalk, life: 1, s: size });
+      this.drum(ch, x, at ? dy : undefined);
       return;
     }
     const cols = ROWS[row].length;
-    const x = W * (0.12 + 0.76 * ((col + 0.5) / cols));
-    const y = H * (0.3 + row * 0.19) + (Math.random() - 0.5) * H * 0.06;
+    const x = at ? at.x * dpr : W * (0.12 + 0.76 * ((col + 0.5) / cols));
+    const y = at ? at.y * dpr : H * (0.3 + row * 0.19) + (Math.random() - 0.5) * H * 0.06;
     const color = [C.chalk, C.blush, C.deep][row];
-    this.things.push({ kind: "letter", ch, x, y, color, life: 1, s: Math.min(H * 0.34, W * 0.3) });
-    if (row === 0) this.things.push({ kind: "ring", x, y, color: C.chalk, life: 1, r: H * 0.05 });
+    this.things.push({ kind: "letter", ch, x, y, color, life: 1, s: size });
+    if (row === 0) this.things.push({ kind: "ring", x, y, color: C.chalk, life: 1, r: H * 0.05 * fx });
     if (row === 1) this.things.push({ kind: "dots", x, y, color: C.blush, life: 1, a: Math.random() * Math.PI });
     if (row === 2) this.things.push({ kind: "bar", y, color: C.deep, life: 1, dir: col % 2 ? 1 : -1 });
     if (this.things.length > 60) this.things.splice(0, this.things.length - 60);
     this.kick();
   }
+  /** A soft ring spreading from a point given in CSS px (the "sound on" tap). */
+  ripple(x: number, y: number) {
+    const { dpr, H, C } = this;
+    this.things.push({ kind: "ring", x: x * dpr, y: y * dpr, color: C.chalk, life: 1, r: H * 0.01 });
+    this.things.push({ kind: "ring", x: x * dpr, y: y * dpr, color: C.blush, life: 1, r: H * 0.04 });
+    this.kick();
+  }
   /** One comic hit for a drum key. x is that key's column. */
-  drum(d: string, x: number) {
+  drum(d: string, x: number, near?: number) {
     const { W, H, C } = this;
-    const m = Math.min(W, H);
-    const y = H * (0.3 + Math.random() * 0.4);
+    const m = Math.min(W, H) * (this.fx < 1 ? 0.6 : 1);
+    const y = near ?? H * (0.3 + Math.random() * 0.4);
     const jx = x + (Math.random() - 0.5) * W * 0.06;
     const rot = (Math.random() - 0.5) * 0.5;
     // keep every burst fully on screen, even for the keys at either end of the row
@@ -516,11 +593,14 @@ class Stage {
       const main = this.cx;
       this.cx = this.lcx;
       this.lcx.clearRect(0, 0, W, H);
-      for (const t of comics) {
-        if (t.kind === "focus") this.drawFocus(t);
-        else if (t.kind === "comic") this.drawComic(t);
+      try {
+        for (const t of comics) {
+          if (t.kind === "focus") this.drawFocus(t);
+          else if (t.kind === "comic") this.drawComic(t);
+        }
+      } finally {
+        this.cx = main;
       }
-      this.cx = main;
       cx.globalAlpha = COMIC_ALPHA;
       cx.drawImage(this.layer, 0, 0);
       cx.globalAlpha = 1;
@@ -542,22 +622,22 @@ class Stage {
           cx.font = `900 ${t.s * (1 + k * 0.25)}px Unbounded, "Arial Black", sans-serif`;
           cx.textAlign = "center";
           cx.textBaseline = "middle";
-          cx.fillText(t.ch.toUpperCase(), t.x, t.y - k * H * 0.05);
+          cx.fillText(t.ch.toUpperCase(), t.x, t.y - k * H * 0.05 * this.fx);
           break;
         case "ring":
           cx.strokeStyle = t.color;
-          cx.lineWidth = 6 * dpr * t.life;
+          cx.lineWidth = 6 * dpr * t.life * (this.fx < 1 ? 0.6 : 1);
           cx.beginPath();
-          cx.arc(t.x, t.y, t.r + k * H * 0.45, 0, Math.PI * 2);
+          cx.arc(t.x, t.y, t.r + k * H * 0.45 * this.fx, 0, Math.PI * 2);
           cx.stroke();
           break;
         case "dots":
           cx.fillStyle = t.color;
           for (let i = 0; i < 10; i++) {
             const a = t.a + (i / 10) * Math.PI * 2;
-            const r = k * H * 0.3;
+            const r = k * H * 0.3 * this.fx;
             cx.beginPath();
-            cx.arc(t.x + Math.cos(a) * r, t.y + Math.sin(a) * r, 10 * dpr * t.life + 2, 0, Math.PI * 2);
+            cx.arc(t.x + Math.cos(a) * r, t.y + Math.sin(a) * r, (10 * dpr * t.life + 2) * (this.fx < 1 ? 0.6 : 1), 0, Math.PI * 2);
             cx.fill();
           }
           break;
@@ -571,7 +651,7 @@ class Stage {
         case "bar": {
           cx.fillStyle = t.color;
           const w = W * Math.min(1, k * 2.2);
-          cx.fillRect(t.dir > 0 ? 0 : W - w, t.y - H * 0.025, w, H * 0.05);
+          cx.fillRect(t.dir > 0 ? 0 : W - w, t.y - H * 0.025 * this.fx, w, H * 0.05 * this.fx);
           break;
         }
       }
@@ -582,7 +662,7 @@ class Stage {
     if (this.things.length) requestAnimationFrame(() => this.draw());
     else {
       this.running = false;
-      this.clear();
+      this.release();
     }
   }
 }
@@ -595,6 +675,9 @@ const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as
 export function boot() {
   const engine = new Engine();
   engine.ensure();
+  // wake audio on the first finger lift, click or key, wherever it happens on the page
+  for (const t of ["touchend", "pointerup", "click", "keydown"])
+    addEventListener(t, () => engine.unlock(), { capture: true, passive: true });
   const stage = new Stage($("#stage"));
   const bufEl = $("#buf");
   const card = $("#card");
@@ -629,13 +712,24 @@ export function boot() {
   });
   document.addEventListener("visibilitychange", () => engine.setHidden(document.hidden));
 
+  let onPress: (ch: string) => void = () => {};
+  // after 10 quiet seconds the page settles back to its opening state, prompt and all
+  let idleTimer = 0;
+  const settle = () => {
+    document.body.classList.remove("played");
+    buffer = "";
+    bufEl.textContent = "";
+  };
   function press(ch: string) {
     engine.start();
     document.body.classList.add("played");
+    clearTimeout(idleTimer);
+    idleTimer = window.setTimeout(settle, 10000);
     const hit = lookup(ch);
     if (!hit) return;
     engine.hit(hit.sample, ch, hit.level, toneFor(hit.row, hit.col));
     stage.spawn(ch, hit.row, hit.col);
+    onPress(ch);
     buffer = (buffer + ch).slice(-24);
     bufEl.textContent = buffer;
     for (const [w, e] of byWord) {
@@ -704,7 +798,20 @@ export function boot() {
     card.classList.add("open");
     card.setAttribute("aria-hidden", "false");
     card.removeAttribute("inert");
+    fitTitle();
   }
+  // Titles wrap between words but never inside one. If a single word is wider than the card
+  // (a long name on a narrow phone), the title shrinks just enough for that word to fit.
+  function fitTitle() {
+    const h = document.getElementById("cardtitle");
+    if (!h) return;
+    h.style.fontSize = "";
+    if (h.scrollWidth > h.clientWidth + 1) {
+      const size = parseFloat(getComputedStyle(h).fontSize);
+      h.style.fontSize = `${Math.floor(size * (h.clientWidth / h.scrollWidth) * 0.98)}px`;
+    }
+  }
+  addEventListener("resize", () => card.classList.contains("open") && fitTitle());
   function closeCard() {
     card.classList.remove("open");
     card.setAttribute("aria-hidden", "true");
@@ -712,27 +819,85 @@ export function boot() {
   }
   $("#close").addEventListener("click", closeCard);
 
+  // projects sheet (phones): slides up from the Projects button, closes before a project plays
+  const sheet = $("#sheet");
+  const scrim = $("#scrim");
+  const projBtn = $<HTMLButtonElement>("#projbtn");
+  const sheetOpen = () => sheet.classList.contains("open");
+  function openSheet() {
+    closeCard();
+    sheet.style.transform = "";
+    sheet.classList.add("open");
+    scrim.classList.add("open");
+    sheet.setAttribute("aria-hidden", "false");
+    sheet.removeAttribute("inert");
+    projBtn.setAttribute("aria-expanded", "true");
+    engine.start();
+  }
+  function closeSheet() {
+    sheet.style.transform = "";
+    sheet.classList.remove("open");
+    scrim.classList.remove("open");
+    sheet.setAttribute("aria-hidden", "true");
+    sheet.setAttribute("inert", "");
+    projBtn.setAttribute("aria-expanded", "false");
+  }
+  projBtn.addEventListener("click", openSheet);
+  scrim.addEventListener("click", closeSheet);
+  $("#sheetclose").addEventListener("click", closeSheet);
+  // swipe the sheet's top down to close it
+  const grab = $("#sheetgrab");
+  let dragY: number | null = null;
+  grab.addEventListener("pointerdown", (e) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    dragY = e.clientY;
+    sheet.classList.add("dragging");
+    grab.setPointerCapture(e.pointerId);
+  });
+  grab.addEventListener("pointermove", (e) => {
+    if (dragY === null) return;
+    sheet.style.transform = `translateY(${Math.max(0, e.clientY - dragY)}px)`;
+  });
+  const endDrag = (e: PointerEvent) => {
+    if (dragY === null) return;
+    const dy = e.clientY - dragY;
+    dragY = null;
+    sheet.classList.remove("dragging");
+    if (dy > 80) closeSheet();
+    else sheet.style.transform = "";
+  };
+  grab.addEventListener("pointerup", endDrag);
+  grab.addEventListener("pointercancel", endDrag);
+
   // word index + list view buttons
   document.querySelectorAll<HTMLButtonElement>("[data-word]").forEach((b) =>
     b.addEventListener("click", () => {
       if (listEl.open) listEl.close();
-      autotype(b.dataset.word!);
+      if (b.closest("#sheet")) {
+        // let the sheet slide away first, then play the word
+        closeSheet();
+        window.setTimeout(() => autotype(b.dataset.word!), 340);
+      } else autotype(b.dataset.word!);
     })
   );
-  $("#openlist").addEventListener("click", () => {
+  const openList = () => {
     closeCard();
+    closeSheet();
     listEl.showModal();
-  });
+  };
+  $("#openlist").addEventListener("click", openList);
+  document.querySelectorAll("[data-openlist]").forEach((b) => b.addEventListener("click", openList));
   $("#closelist").addEventListener("click", () => listEl.close());
 
   // keyboard
   addEventListener("keydown", (ev) => {
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
     if (ev.key === "Escape") {
-      closeCard();
+      if (sheetOpen()) closeSheet();
+      else closeCard();
       return;
     }
-    if (listEl.open) return;
+    if (listEl.open || sheetOpen()) return;
     const t = ev.target as HTMLElement;
     if (t.closest("input[type=range], textarea")) return;
     if (t.closest("button, a") && (ev.key === "Enter" || ev.key === " ")) return;
@@ -750,13 +915,114 @@ export function boot() {
     ghost.value = "";
     for (const ch of v) if (/[a-z0-9]/.test(ch)) press(ch);
   });
-  $("#typebtn").addEventListener("click", () => ghost.focus());
+  // Tap or drag on the background to play. The open space between the header and the typed
+  // letters is split into four bands laid out like the keyboard: drums (1-0) on top, then the
+  // Q, A and Z rows. Dragging plays every key your finger crosses, once per key.
+  const band = () => {
+    const top = $(".top").getBoundingClientRect().bottom;
+    const bottom = $(".buffer").getBoundingClientRect().top;
+    return bottom - top > 120 ? { top, bottom } : { top: 0, bottom: innerHeight };
+  };
+  const keyAt = (x: number, y: number, b: { top: number; bottom: number }) => {
+    const r = Math.min(3, Math.max(0, Math.floor(((y - b.top) / (b.bottom - b.top)) * 4)));
+    const keys = r === 0 ? DIGITS : ROWS[r - 1];
+    return keys[Math.min(keys.length - 1, Math.max(0, Math.floor((x / innerWidth) * keys.length)))];
+  };
+
+  // Ghost pads (touch screens only): every key sits faintly where you'd tap it, drifting a little
+  // as if suspended in water. No borders; they light up for a moment when played.
+  const padEls = new Map<string, HTMLElement>();
+  if (matchMedia("(hover: none)").matches) {
+    const layer = document.createElement("div");
+    layer.className = "pads";
+    layer.setAttribute("aria-hidden", "true");
+    const rows = [DIGITS, ...ROWS];
+    rows.forEach((keys, r) =>
+      [...keys].forEach((k, i) => {
+        const el = document.createElement("span");
+        el.className = "pad";
+        el.textContent = k;
+        el.dataset.r = String(r);
+        el.dataset.i = String(i);
+        el.dataset.n = String(keys.length);
+        // each one drifts on its own slow loop so they never move in step
+        el.style.setProperty("--dur", `${9 + Math.random() * 7}s`);
+        el.style.setProperty("--delay", `${-Math.random() * 16}s`);
+        el.style.setProperty("--dx", `${(Math.random() - 0.5) * 10}px`);
+        el.style.setProperty("--dy", `${4 + Math.random() * 6}px`);
+        el.style.setProperty("--rot", `${(Math.random() - 0.5) * 6}deg`);
+        layer.appendChild(el);
+        padEls.set(k, el);
+      }),
+    );
+    stage.cv.after(layer);
+    const place = () => {
+      const b = band();
+      const h = (b.bottom - b.top) / 4;
+      const size = Math.min(h * 0.55, (innerWidth / 10) * 0.9);
+      layer.style.setProperty("--pad-size", `${size}px`);
+      padEls.forEach((el) => {
+        const r = +el.dataset.r!, i = +el.dataset.i!, n = +el.dataset.n!;
+        el.style.left = `${((i + 0.5) / n) * innerWidth}px`;
+        el.style.top = `${b.top + (r + 0.5) * h}px`;
+      });
+    };
+    place();
+    addEventListener("resize", place);
+    document.fonts?.ready.then(place);
+  }
+  if (padEls.size)
+    stage.anchor = (ch) => {
+      const el = padEls.get(ch);
+      return el ? { x: parseFloat(el.style.left), y: parseFloat(el.style.top) } : null;
+    };
+  onPress = (ch) => {
+    const el = padEls.get(ch);
+    if (!el) return;
+    el.classList.remove("hit");
+    void el.offsetWidth; // restart the flash
+    el.classList.add("hit");
+  };
+  let drag: { id: number; last: string; b: { top: number; bottom: number } } | null = null;
+  // Phones start "locked": audio can only begin on a finger lift, so the first tap is framed as
+  // turning the sound on. When it goes live the pads light up outward from that tap.
+  let lastTouch = { x: innerWidth / 2, y: innerHeight / 2 };
+  if (padEls.size && engine.ctx?.state !== "running") {
+    document.body.classList.add("locked");
+    engine.onLive = () => {
+      const { x, y } = lastTouch;
+      const far = Math.hypot(innerWidth, innerHeight);
+      padEls.forEach((el) => {
+        const d = Math.hypot(parseFloat(el.style.left) - x, parseFloat(el.style.top) - y);
+        el.style.transitionDelay = `${(d / far) * 0.7}s`;
+      });
+      stage.ripple(x, y);
+      document.body.classList.remove("locked");
+      window.setTimeout(() => padEls.forEach((el) => (el.style.transitionDelay = "")), 1600);
+    };
+  }
   stage.cv.addEventListener("pointerdown", (e) => {
-    const row = Math.min(2, Math.max(0, Math.floor(((e.clientY / innerHeight) - 0.2) / 0.22)));
-    const keys = ROWS[row];
-    const col = Math.min(keys.length - 1, Math.floor((e.clientX / innerWidth) * keys.length));
-    press(keys[col]);
+    lastTouch = { x: e.clientX, y: e.clientY };
+    const b = band();
+    const k = keyAt(e.clientX, e.clientY, b);
+    drag = { id: e.pointerId, last: k, b };
+    stage.cv.setPointerCapture(e.pointerId);
+    press(k);
   });
+  stage.cv.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const k = keyAt(e.clientX, e.clientY, drag.b);
+    if (k !== drag.last) {
+      drag.last = k;
+      press(k);
+    }
+  });
+  const endPlay = (e: PointerEvent) => {
+    if (drag && e.pointerId === drag.id) drag = null;
+  };
+  stage.cv.addEventListener("pointerup", endPlay);
+  stage.cv.addEventListener("pointercancel", endPlay);
+
 
   // deep link: /#foundry opens that entry once the page is ready
   const hash = location.hash.slice(1).toLowerCase();
