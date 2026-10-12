@@ -325,6 +325,9 @@ class Stage {
       // drums: a thin column at the key's position, plus that drum's comic hit
       const x = W * (0.06 + 0.88 * ((col + 0.5) / 10));
       this.things.push({ kind: "col", x, w: W * (col === 0 ? 0.04 : 0.016), color: col % 2 ? C.blush : C.chalk, life: 1 });
+      // the digit itself, big like the letters, above the comic hit
+      const dy = H * (0.42 + (Math.random() - 0.5) * 0.12);
+      this.things.push({ kind: "letter", ch, x, y: dy, color: C.chalk, life: 1, s: Math.min(H * 0.34, W * 0.3) });
       this.drum(ch, x);
       return;
     }
