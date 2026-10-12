@@ -127,9 +127,16 @@ const description =
                       <h4>{e.title}</h4>
                       <span class="art-meta">{e.meta}</span>
                     </div>
+                    {e.links && e.group !== "Me" && (
+                      <p class="art-sublinks">
+                        {e.links.map((l) => (
+                          <a href={l.href}>{l.label} ↗</a>
+                        ))}
+                      </p>
+                    )}
                     {e.body.map((p) => <p set:html={p} />)}
                     {e.stack && <p class="art-stack">{e.stack.join(" · ")}</p>}
-                    {e.links && (
+                    {e.links && e.group === "Me" && (
                       <p class="art-links">
                         {e.links.map((l) => (
                           <a href={l.href}>{l.label} ↗</a>
@@ -249,6 +256,11 @@ const description =
       #cardbody p a:hover, .list-group p a:hover { text-decoration-thickness: 3px; }
       #cardbody .tags { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
       #cardbody .tags li { font-family: var(--mono); font-size: 12px; background: color-mix(in oklab, var(--ground) 11%, var(--card)); padding: 4px 9px; border-radius: 999px; }
+      #cardbody .sublinks { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: -4px 0 6px; font-family: var(--mono); font-size: 16.5px; }
+      #cardbody .sublinks a { color: var(--ground); font-weight: 500; text-underline-offset: 3px; }
+      #cardbody .sublinks a:hover { text-decoration-thickness: 2px; }
+      .art-sublinks { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 8px 0 0 !important; font-family: var(--mono); font-size: 15.5px !important; }
+      .art-sublinks a, .list-group .art-sublinks a { color: var(--ground); font-weight: 500; text-decoration-thickness: 1px; }
       #cardbody .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; }
       #cardbody .links a { color: var(--ground); font-weight: 600; text-underline-offset: 3px; }
       #cardbody .mailrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }

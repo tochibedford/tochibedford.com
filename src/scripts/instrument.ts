@@ -683,11 +683,14 @@ export function boot() {
       e.word === "hello"
         ? `<div class="mailrow"><span class="mail">tochibedford.work@gmail.com</span><button class="copy" type="button">Copy email</button></div>`
         : "";
+    // projects show their link right under the title, like a subtitle; About, Résumé and Hello keep theirs at the bottom
+    const linkUp = e.group !== "Me" && links;
     cardBody.innerHTML = `<p class="meta">${e.meta}</p><h2 id="cardtitle">${e.title}</h2>
+      ${linkUp ? `<div class="sublinks">${links}</div>` : ""}
       ${e.body.map((p) => `<p>${p}</p>`).join("")}
       ${e.note ? `<p class="note">${e.note}</p>` : ""}
       ${e.stack?.length ? `<ul class="tags">${e.stack.map((s) => `<li>${s}</li>`).join("")}</ul>` : ""}
-      ${email}<div class="links">${links}</div>`;
+      ${email}${linkUp ? "" : `<div class="links">${links}</div>`}`;
     const copy = cardBody.querySelector<HTMLButtonElement>(".copy");
     copy?.addEventListener("click", () => {
       navigator.clipboard?.writeText("tochibedford.work@gmail.com").then(
