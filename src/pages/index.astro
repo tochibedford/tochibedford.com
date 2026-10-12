@@ -3,10 +3,35 @@ import { entries, GROUPS, RESUME_PDF, EMAIL } from "../data/work";
 const groups = GROUPS.filter((g) => entries.some((e) => e.group === g));
 const workGroups = groups.filter((g) => g !== "Me");
 const about = entries.find((e) => e.word === "about")!;
-const title = "Tochi Bedford · Senior software engineer";
+const title = "Tochi Bedford · Senior Software Engineer in Los Angeles";
+const SITE = "https://tochibedford.com";
+const ogImage = `${SITE}/og.png`;
 const ME = new Set(["about", "resume", "hello"]); // live in the header, not the project list
 const description =
-  "Portfolio of Tochukwu Bedford, a senior software engineer in Los Angeles. Type to play. Spell a project to open it.";
+  "Tochukwu (Tochi) Bedford is a senior software engineer in Los Angeles building web, mobile, desktop and backend software, from Offtop's music platform to healthcare automation. Portfolio, résumé and contact.";
+// Structured data so search engines and AI agents can read who this is without running the instrument.
+const strip = (h: string) => h.replace(/<[^>]+>/g, "");
+const person = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  url: `${SITE}/`,
+  name: title,
+  mainEntity: {
+    "@type": "Person",
+    name: "Tochukwu Bedford",
+    alternateName: "Tochi Bedford",
+    jobTitle: "Senior Software Engineer",
+    description: strip(entries.find((e) => e.word === "about")!.body[0]),
+    url: `${SITE}/`,
+    image: `${SITE}/tochi.jpg`,
+    email: `mailto:${EMAIL}`,
+    address: { "@type": "PostalAddress", addressLocality: "Los Angeles", addressRegion: "CA", addressCountry: "US" },
+    worksFor: { "@type": "Organization", name: "Offtop", url: "https://offtop.com" },
+    alumniOf: { "@type": "CollegeOrUniversity", name: "Covenant University" },
+    knowsAbout: ["Software engineering", "React Native", "TypeScript", "Node.js", "NestJS", "Electron", "AWS", "C++", "Audio software", "Healthcare automation"],
+    sameAs: ["https://github.com/tochibedford", "https://www.linkedin.com/in/tochukwu-bedford/", "https://x.com/TochiBedford"],
+  },
+};
 ---
 
 <html lang="en">
@@ -15,9 +40,28 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content="Tochukwu Bedford" />
+    <link rel="canonical" href={`${SITE}/`} />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="Plain-text version for AI agents" />
+    <link rel="sitemap" href="/sitemap.xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:url" content={`${SITE}/`} />
+    <meta property="og:site_name" content="Tochi Bedford" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Tochi Bedford, senior software engineer in Los Angeles" />
+    <meta property="profile:first_name" content="Tochukwu" />
+    <meta property="profile:last_name" content="Bedford" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@TochiBedford" />
+    <meta name="twitter:creator" content="@TochiBedford" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
     <meta name="theme-color" content="#1a2cf0" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
