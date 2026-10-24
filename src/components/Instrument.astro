@@ -13,7 +13,8 @@ const essay = entries.find((e) => e.word === "generalist")!;
 const SITE = "https://tochibedford.com";
 const title = entry ? pageTitle(entry) : HOME_TITLE;
 const url = entry ? `${SITE}/${entry.word}` : `${SITE}/`;
-const ogImage = `${SITE}/og.png`;
+const ogImage = entry ? `${SITE}/og/${entry.word}.png` : `${SITE}/og.png`;
+const ogAlt = entry ? `${entry.title}, by Tochi Bedford` : "Tochi Bedford, senior software engineer in Los Angeles";
 const ME = new Set(["about", "generalist", "resume", "hello"]); // live in the header, not the project list
 const homeDescription =
   "Tochukwu (Tochi) Bedford is a senior software engineer in Los Angeles building web, mobile, desktop and backend software, from Offtop's music platform to healthcare automation. Portfolio, résumé and contact.";
@@ -63,7 +64,7 @@ const person = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Tochi Bedford, senior software engineer in Los Angeles" />
+    <meta property="og:image:alt" content={ogAlt} />
     {!entry && <meta property="profile:first_name" content="Tochukwu" />}
     {!entry && <meta property="profile:last_name" content="Bedford" />}
     <meta name="twitter:card" content="summary_large_image" />
