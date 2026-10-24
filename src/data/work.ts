@@ -18,6 +18,8 @@ export type Entry = {
 };
 
 export const RESUME_PDF = "/tochukwu-bedford-resume.pdf";
+export const HOME_TITLE = "Tochi Bedford · Senior Software Engineer in Los Angeles";
+export const pageTitle = (e: Entry) => `${e.title} · Tochi Bedford`;
 export const EMAIL = "tochibedford.work@gmail.com";
 
 export const entries: Entry[] = [
@@ -257,3 +259,6 @@ export const entries: Entry[] = [
     ],
   },
 ];
+
+/** Words with their own page at "/<word>". "/resume" is left to its own page, which opens the PDF. */
+export const PAGE_WORDS = new Set(entries.map((e) => e.word).filter((w) => w !== "resume"));

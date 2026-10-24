@@ -23,14 +23,14 @@ export function GET() {
     "",
   ];
   const essay = entries.find((e) => e.word === "generalist")!;
-  lines.push(`## ${essay.title}`, "", ...essay.body.flatMap((b) => [plain(b), ""]));
+  lines.push(`## ${essay.title}`, `${SITE}/${essay.word}`, "", ...essay.body.flatMap((b) => [plain(b), ""]));
   for (const g of GROUPS) {
     if (g === "Me") continue;
     const items = entries.filter((e) => e.group === g);
     if (!items.length) continue;
     lines.push(`## ${g}`, "");
     for (const e of items) {
-      lines.push(`### ${e.title}`, `${e.meta}`, "");
+      lines.push(`### ${e.title}`, `${e.meta} · ${SITE}/${e.word}`, "");
       lines.push(...e.body.flatMap((b) => [plain(b), ""]));
       if (e.note) lines.push(e.note, "");
       if (e.stack?.length) lines.push(`Stack: ${e.stack.join(", ")}`, "");

@@ -1,0 +1,12 @@
+---
+// One page per word, so "/foundry" or "/generalist" opens straight to that card and can be shared.
+import Instrument from "../components/Instrument.astro";
+import { entries, PAGE_WORDS } from "../data/work";
+
+export function getStaticPaths() {
+  return entries.filter((e) => PAGE_WORDS.has(e.word)).map((entry) => ({ params: { word: entry.word }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+
+<Instrument entry={entry} />

@@ -1,6 +1,8 @@
-// The site is one page plus the résumé, so the sitemap is written by hand.
+import { PAGE_WORDS } from "../data/work";
+
+// The home page, a page per word, the résumé and the plain-text version.
 const SITE = "https://tochibedford.com";
-const urls = ["/", "/tochukwu-bedford-resume.pdf", "/llms.txt"];
+const urls = ["/", ...[...PAGE_WORDS].map((w) => `/${w}`), "/tochukwu-bedford-resume.pdf", "/llms.txt"];
 
 export function GET() {
   const body = `<?xml version="1.0" encoding="UTF-8"?>

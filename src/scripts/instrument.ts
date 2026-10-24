@@ -1,4 +1,4 @@
-import { entries, type Entry } from "../data/work";
+import { entries, HOME_TITLE, PAGE_WORDS, pageTitle, type Entry } from "../data/work";
 
 /* ------------------------------------------------------------------ *
  * Key map. Three letter rows, three instruments, all F minor pentatonic.
@@ -796,7 +796,17 @@ export function boot() {
     [...word].forEach((ch, i) => autoTimers.push(window.setTimeout(() => press(ch), i * 105)));
   }
 
-  function openCard(e: Entry) {
+  // The address bar follows the card: "/word" while it's open, "/" once it closes, so whatever is
+  // open can be shared and the back button closes it. Words without a page of their own stay on "/".
+  const wordFromPath = () => location.pathname.replace(/^\/+|\/+$/g, "");
+  function showUrl(e: Entry | null) {
+    const page = e && PAGE_WORDS.has(e.word) ? e : null;
+    if (wordFromPath() !== (page?.word ?? "")) history.pushState(null, "", page ? `/${page.word}` : "/");
+    document.title = page ? pageTitle(page) : HOME_TITLE;
+  }
+
+  /** Pass push=false when the address bar already shows this card (arriving on its page, or back/forward). */
+  function openCard(e: Entry, push = true) {
     cardWord.textContent = `You played “${e.word}”`;
     const links = (e.links || [])
       .map((l) => `<a href="${l.href}" ${l.href.startsWith("/") ? "" : 'rel="noopener" target="_blank"'}>${l.label}${l.href.startsWith("/") ? "" : " ↗"}</a>`)
@@ -824,6 +834,7 @@ export function boot() {
     card.setAttribute("aria-hidden", "false");
     card.removeAttribute("inert");
     fitTitle();
+    if (push) showUrl(e);
   }
   // Titles wrap between words but never inside one. If a single word is wider than the card
   // (a long name on a narrow phone), the title shrinks just enough for that word to fit.
@@ -837,12 +848,20 @@ export function boot() {
     }
   }
   addEventListener("resize", () => card.classList.contains("open") && fitTitle());
-  function closeCard() {
+  function closeCard(push = true) {
+    const wasOpen = card.classList.contains("open");
     card.classList.remove("open");
     card.setAttribute("aria-hidden", "true");
     card.setAttribute("inert", "");
+    if (wasOpen && push) showUrl(null);
   }
-  $("#close").addEventListener("click", closeCard);
+  $("#close").addEventListener("click", () => closeCard());
+  addEventListener("popstate", () => {
+    const e = byWord.get(wordFromPath());
+    if (e && PAGE_WORDS.has(e.word)) openCard(e, false);
+    else closeCard(false);
+    document.title = e ? pageTitle(e) : HOME_TITLE;
+  });
 
   // projects sheet (phones): slides up from the Projects button, closes before a project plays
   const sheet = $("#sheet");
@@ -1049,7 +1068,23 @@ export function boot() {
   stage.cv.addEventListener("pointercancel", endPlay);
 
 
-  // deep link: /#foundry opens that entry once the page is ready
+  // Arriving on "/foundry" (or an old "/#foundry" link) opens that card straight away. There's
+  // no typing animation: audio can't start before the first tap, so it would play in silence.
+  // The word waits in the typed buffer instead, and the card's label becomes a button to play it.
   const hash = location.hash.slice(1).toLowerCase();
-  if (byWord.has(hash)) openCard(byWord.get(hash)!);
+  if (byWord.has(hash) && PAGE_WORDS.has(hash)) {
+    history.replaceState(null, "", `/${hash}`);
+    document.title = pageTitle(byWord.get(hash)!);
+  }
+  const arrived = byWord.get(wordFromPath()) ?? byWord.get(hash);
+  if (arrived) {
+    openCard(arrived, false);
+    found.add(arrived.word);
+    document.querySelectorAll(`[data-word="${arrived.word}"]`).forEach((b) => b.classList.add("found"));
+    document.body.classList.add("played");
+    bufEl.textContent = arrived.word;
+    idleTimer = window.setTimeout(settle, 10000);
+    cardWord.innerHTML = `<button class="textbtn" type="button">Play “${arrived.word}”</button>`;
+    cardWord.querySelector("button")!.addEventListener("click", () => autotype(arrived.word));
+  }
 }
