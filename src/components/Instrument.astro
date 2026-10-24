@@ -351,6 +351,15 @@ const person = {
         transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s 0.45s;
       }
       .card.open { transform: none; visibility: visible; transition-delay: 0s; box-shadow: -30px 0 60px -30px rgba(8, 16, 79, 0.6); }
+      /* While a word plays from its card's Play button, the card goes see-through (faded and
+         blurred) so the letters and the burst behind it show, then comes back once it lands. */
+      .card {
+        transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s 0.45s, background-color 0.35s ease,
+          backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease;
+      }
+      .card > * { transition: opacity 0.35s ease; }
+      .card.see-through { background: color-mix(in oklab, var(--card) 22%, transparent); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+      .card.see-through > * { opacity: 0.22; }
       .card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: var(--mono); font-size: 12px; color: var(--card-dim); }
       .close { font-family: var(--mono); font-size: 12px; background: none; border: 1.5px solid currentColor; color: inherit; border-radius: 999px; padding: 0 14px; min-height: 38px; cursor: pointer; }
       .card .close { color: var(--card-ink); }

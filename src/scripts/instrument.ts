@@ -782,6 +782,8 @@ export function boot() {
     drumHit("2", engine.rootRate(), false);
     drumHit("0", 1, false);
     stage.bam();
+    // a card that went see-through for this word comes back once the burst has had a moment
+    if (card.classList.contains("see-through")) window.setTimeout(() => card.classList.remove("see-through"), 900);
     found.add(e.word);
     document.querySelectorAll(`[data-word="${e.word}"]`).forEach((b) => b.classList.add("found"));
     window.setTimeout(() => (bufEl.textContent = ""), 450);
@@ -850,7 +852,7 @@ export function boot() {
   addEventListener("resize", () => card.classList.contains("open") && fitTitle());
   function closeCard(push = true) {
     const wasOpen = card.classList.contains("open");
-    card.classList.remove("open");
+    card.classList.remove("open", "see-through");
     card.setAttribute("aria-hidden", "true");
     card.setAttribute("inert", "");
     if (wasOpen && push) showUrl(null);
@@ -1085,6 +1087,9 @@ export function boot() {
     bufEl.textContent = arrived.word;
     idleTimer = window.setTimeout(settle, 10000);
     cardWord.innerHTML = `<button class="textbtn" type="button">Play “${arrived.word}”</button>`;
-    cardWord.querySelector("button")!.addEventListener("click", () => autotype(arrived.word));
+    cardWord.querySelector("button")!.addEventListener("click", () => {
+      card.classList.add("see-through");
+      autotype(arrived.word);
+    });
   }
 }
