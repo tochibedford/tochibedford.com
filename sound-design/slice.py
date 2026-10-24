@@ -1,10 +1,10 @@
 # Cuts FL's split-mixer stems into the one-shots and pad clips the site plays.
 # Every sound sits in a known time slot (see make_midi.py), so slicing is: find the
 # onset inside the slot, trim the tail where it decays to silence, fade, encode.
-import subprocess, json, os, numpy as np
+import subprocess, json, os, sys, numpy as np
 SR=48000
 R='renders/Portfolio_Insert {}.wav'
-OUT='../public/sounds'
+OUT=sys.argv[1] if len(sys.argv)>1 else '../public/sounds'
 os.makedirs(OUT,exist_ok=True)
 man=json.load(open('manifest.json'))
 def load(i):
@@ -12,6 +12,12 @@ def load(i):
     return np.frombuffer(raw,dtype=np.float32).reshape(-1,2).copy()
 def db(x): return 20*np.log10(max(x,1e-9))
 stems={'keys':1,'pluck':2,'bass':3,'pad':4,'swell':5}
+# Encoding per stem, sized for a phone: the bass is mono in the mix, so it ships mono.
+ENC={'keys':('2','128k'),'pluck':('2','128k'),'bass':('1','96k'),'pad':('2','128k'),'swell':('2','128k')}
+# Keys and plucks are cut where they fall to -50 dB (not -60) and faded out, and plucks are capped
+# at 3 s (their tails ring to the end of the slot). What's cut sits below -47 dB before the mix
+# and only cost download time.
+TAIL={'keys':(-50,0.25,None),'pluck':(-50,0.4,3.0)}
 report=[]; files={}
 for src,ins in stems.items():
     a=load(ins); slot=man['slot_seconds'][src]
@@ -25,14 +31,16 @@ for src,ins in stems.items():
         seg_env=env[s0:s1]
         on=np.argmax(seg_env>10**(-50/20))            # first sample above -50 dB
         start=max(0,on-int(0.002*SR))
-        above=np.nonzero(seg_env>10**(-60/20))[0]
+        tail_db,tail_fade,tail_max=TAIL.get(src,(-60,0.04,None))
+        above=np.nonzero(seg_env>10**(tail_db/20))[0]
         end=min(len(seg_env),above[-1]+int(0.02*SR)) if len(above) else len(seg_env)
+        if tail_max: end=min(end,start+int(tail_max*SR))
         clip=a[s0+start:s0+end].copy()
-        fl=min(len(clip)//4,int(0.04*SR)); clip[-fl:]*=np.linspace(1,0,fl)[:,None]
+        fl=min(len(clip)//4,int(tail_fade*SR)); clip[-fl:]*=np.linspace(1,0,fl)[:,None]
         fi=int(0.001*SR); clip[:fi]*=np.linspace(0,1,fi)[:,None]
         name=s['file'].replace('.wav','.mp3')
-        br='128k' if src=='pad' else '160k'
-        subprocess.run(['ffmpeg','-v','error','-y','-f','f32le','-ac','2','-ar',str(SR),'-i','-','-ar','44100','-c:a','libmp3lame','-b:a',br,f'{OUT}/{name}'],input=clip.astype(np.float32).tobytes(),check=True)
+        ac,br=ENC[src]
+        subprocess.run(['ffmpeg','-v','error','-y','-f','f32le','-ac','2','-ar',str(SR),'-i','-','-ac',ac,'-ar','44100','-c:a','libmp3lame','-b:a',br,f'{OUT}/{name}'],input=clip.astype(np.float32).tobytes(),check=True)
         dur=len(clip)/SR; pk=db(np.abs(clip).max())
         files[name]={'source':src,'key':s.get('key'),'midi':s.get('midi'),'dur':round(dur,3),'onset_ms':round(on/SR*1000,1)}
         report.append(f"{name:18s} onset {on/SR*1000:6.1f}ms  dur {dur:5.2f}s  peak {pk:6.1f}dB")

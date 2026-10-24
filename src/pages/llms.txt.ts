@@ -22,6 +22,8 @@ export function GET() {
     "- X: https://x.com/TochiBedford",
     "",
   ];
+  const essay = entries.find((e) => e.word === "generalist")!;
+  lines.push(`## ${essay.title}`, "", ...essay.body.flatMap((b) => [plain(b), ""]));
   for (const g of GROUPS) {
     if (g === "Me") continue;
     const items = entries.filter((e) => e.group === g);

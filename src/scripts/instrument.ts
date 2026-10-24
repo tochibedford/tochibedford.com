@@ -18,6 +18,7 @@ const PAD_CHORDS = [
 // Final mix, set by ear on the temporary mixer and sound lab (11 Oct 2026).
 const MIX = { keys: 0.17, pluck: 0.08, bass: 0.62, swell: 0.24, swell2: 0.5, drums: 0.32 };
 const PAD_LEVEL = 0.25; // set by ear on the old Ambience slider
+const FETCH_AT_ONCE = 6;
 // Per-drum trims for keys 1-0. 1 = kick (Grime God "Drum Stall"), 2 = 808 (Deviants "Spinz", tuned to F1).
 const DRUM_GAIN: Record<string, number> = { "1": 0.38, "2": 0.61, "3": 0.68, "4": 0.53, "5": 0.53, "6": 0.72, "7": 0.39, "8": 0.66, "9": 0.65, "0": 0.43 };
 
@@ -89,23 +90,39 @@ class Engine {
   settings = readSettings();
 
   constructor() {
-    // Start downloading right away so the first keypress has something to play.
+    // Start downloading right away so the first keypress has something to play. Playable notes
+    // come first, smallest first; the pad and swells aren't needed until a moment after the first tap.
     const names = [
-      ...ROWS.flatMap((row, r) => [...row].map((ch) => `${ROW_SOURCE[r]}-${ch}`)),
-      ...PAD_CHORDS.flatMap((c) => [`pad-${c.id}`, `swell-${c.id}`]),
       ...[...DIGITS].filter((d) => d !== "1").map((d) => `drum-${d}`),
       "kick",
-      ...PAD_CHORDS.map((c) => `swell2-${c.id}`),
+      ...[...ROWS[2]].map((ch) => `bass-${ch}`),
+      ...[...ROWS[0]].map((ch) => `keys-${ch}`),
+      ...[...ROWS[1]].map((ch) => `pluck-${ch}`),
+      `pad-${PAD_CHORDS[0].id}`,
+      // the first chord change goes to PAD_CHORDS[1], so its swells are next
+      ...PAD_CHORDS.slice(1).flatMap((c) => [`swell-${c.id}`, `swell2-${c.id}`, `pad-${c.id}`]),
+      `swell-${PAD_CHORDS[0].id}`,
+      `swell2-${PAD_CHORDS[0].id}`,
     ];
-    for (const n of names) {
+    // A few downloads at a time, in that order. Fired all at once, every file shares the
+    // connection and they all land near the end, so the first tap waits on the whole set.
+    const queue = names.map((n) => {
+      let go!: () => void;
+      const turn = new Promise<void>((r) => (go = r));
       this.raw.set(
         n,
-        fetch(`/sounds/${n}.mp3`).then((r) => {
-          if (!r.ok) throw new Error(`${n}: ${r.status}`);
-          return r.arrayBuffer();
-        })
+        turn.then(() =>
+          fetch(`/sounds/${n}.mp3`).then((r) => {
+            if (!r.ok) throw new Error(`${n}: ${r.status}`);
+            return r.arrayBuffer();
+          })
+        )
       );
-    }
+      return go;
+    });
+    const next = () => queue.shift()?.();
+    for (const p of this.raw.values()) p.then(next, next);
+    for (let i = 0; i < FETCH_AT_ONCE; i++) next();
   }
 
   /**
@@ -137,10 +154,7 @@ class Engine {
     if (!this.ctx) return;
     if (this.ctx.state !== "running") await this.ctx.resume().catch(() => {});
     if (this.ctx.state !== "running") return;
-    // the note that woke audio up plays now, if it was asked for a moment ago (a tap, not a long drag)
-    const p = this.pending;
-    this.pending = null;
-    if (p && performance.now() - p.at < 600) this.hit(...p.args);
+    this.playPending();
     if (!this.live) {
       this.live = true;
       this.onLive?.();
@@ -173,10 +187,20 @@ class Engine {
           .then((buf) => {
             this.buffers.set(name, buf);
             if (name === `pad-${PAD_CHORDS[this.chord].id}` && this.started && !this.padVoices.length) this.padLoop(true);
+            if (this.pending?.args[0] === name) this.playPending();
           })
           .catch(() => {});
       }
     }
+  }
+
+  /** Plays the note held back by hit(), once audio is running and its sample is in, if it was
+   * asked for a moment ago (a tap, not a long drag). */
+  playPending() {
+    const p = this.pending;
+    if (!p || this.ctx?.state !== "running" || !this.buffers.has(p.args[0])) return;
+    this.pending = null;
+    if (performance.now() - p.at < 600) this.hit(...p.args);
   }
 
   applySettings() {
@@ -195,9 +219,10 @@ class Engine {
   hit(sample: string, key: string, level: number, tone: { cutoff: number; gain: number } | null = null, rate = 1) {
     const ctx = this.ctx;
     const buf = this.buffers.get(sample);
-    if (!ctx || !buf) return;
-    // while audio is still locked, notes would pile up and all fire at once later; keep only the latest
-    if (ctx.state !== "running") {
+    if (!ctx) return;
+    // while audio is still locked or the note is still downloading, notes would pile up and all
+    // fire at once later; keep only the latest
+    if (!buf || ctx.state !== "running") {
       this.pending = { args: [sample, key, level, tone, rate], at: performance.now() };
       return;
     }

@@ -226,6 +226,16 @@ export const entries: Entry[] = [
     ],
   },
   {
+    word: "generalist",
+    title: "On being a generalist",
+    meta: "Essay · 2026",
+    group: "Me",
+    body: [
+      "Isaac Newton never called himself a physicist. He studied natural philosophy, which meant all of how the world works, and out of that one pursuit came the laws of motion and gravity, his work on light and colour, a share of calculus, and decades of experiments in alchemy, the chemistry of his time. Somewhere since then we started splitting knowledge into job titles and asking people to pick one and stay in it for life.",
+      "I studied mechanical engineering in university, I write software for a living, I make beats, and lately I read signal-processing papers so I can implement them in C++. None of that feels like changing careers to me. It's the same curiosity pointed at different problems, and each field keeps handing me tools for the next: the music ended up in the apps I build, and the healthcare work came from learning how a clinic actually runs. I think we should bring this back, people contributing to several fields over a lifetime instead of being defined by one. Being good at several things doesn't mean being shallow at all of them; it means having a home base and the freedom to leave it. A specialty is a good place to stand, but it shouldn't be the only place you're allowed to go.",
+    ],
+  },
+  {
     word: "resume",
     title: "Résumé",
     meta: "PDF · 2 pages",

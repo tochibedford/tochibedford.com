@@ -3,10 +3,11 @@ import { entries, GROUPS, RESUME_PDF, EMAIL } from "../data/work";
 const groups = GROUPS.filter((g) => entries.some((e) => e.group === g));
 const workGroups = groups.filter((g) => g !== "Me");
 const about = entries.find((e) => e.word === "about")!;
+const essay = entries.find((e) => e.word === "generalist")!;
 const title = "Tochi Bedford · Senior Software Engineer in Los Angeles";
 const SITE = "https://tochibedford.com";
 const ogImage = `${SITE}/og.png`;
-const ME = new Set(["about", "resume", "hello"]); // live in the header, not the project list
+const ME = new Set(["about", "generalist", "resume", "hello"]); // live in the header, not the project list
 const description =
   "Tochukwu (Tochi) Bedford is a senior software engineer in Los Angeles building web, mobile, desktop and backend software, from Offtop's music platform to healthcare automation. Portfolio, résumé and contact.";
 // Structured data so search engines and AI agents can read who this is without running the instrument.
@@ -100,7 +101,7 @@ const person = {
             <span>F minor</span><span class="dot">·</span><span id="chord">Fm9</span>
           </div>
           <div class="me-words">
-            {["about", "resume", "hello"].map((w) => <button class="word me-word" type="button" data-word={w}>{w}</button>)}
+            {["about", "generalist", "resume", "hello"].map((w) => <button class="word me-word" type="button" data-word={w}>{w}</button>)}
           </div>
         </nav>
       </header>
@@ -201,6 +202,11 @@ const person = {
             <a href="https://www.linkedin.com/in/tochukwu-bedford/">LinkedIn</a> · <a href="https://x.com/TochiBedford">X</a>
           </p>
           <button class="textbtn" type="button" data-word="about">Play “about”</button>
+        </section>
+        <section class="list-group" id="list-generalist">
+          <h3>{essay.title}</h3>
+          {essay.body.map((p) => <p set:html={p} />)}
+          <button class="textbtn" type="button" data-word="generalist">Play “generalist”</button>
         </section>
         {
           workGroups.map((g) => (

@@ -8,11 +8,11 @@ def load(p):
 def f0(x,a=.12,b=.9):
     m=x.mean(1)[int(a*SR):int(b*SR)]; w=np.hanning(len(m)); sp=np.abs(np.fft.rfft(m*w,n=1<<17)); fr=np.fft.rfftfreq(1<<17,1/SR)
     band=(fr>25)&(fr<250); return fr[band][np.argmax(sp[band])]
-def finish(x,maxlen,name,note=''):
+def finish(x,maxlen,name,note=''):  # both are mono samples, so they ship mono
     env=np.abs(x).max(1); on=int(np.argmax(env>10**(-50/20))); x=x[max(0,on-int(.001*SR)):]
     env=np.abs(x).max(1); ab=np.nonzero(env>10**(-58/20))[0]; end=min(len(x),ab[-1]+int(.02*SR),int(maxlen*SR)); x=x[:end].copy()
     fl=min(len(x)//3,int(.08*SR)); x[-fl:]*=np.linspace(1,0,fl)[:,None]; x*=10**(-3/20)/np.abs(x).max()
-    subprocess.run(['ffmpeg','-v','error','-y','-f','f32le','-ac','2','-ar',str(SR),'-i','-','-c:a','libmp3lame','-b:a','160k',f'{OUT}/{name}.mp3'],input=x.astype(np.float32).tobytes(),check=True)
+    subprocess.run(['ffmpeg','-v','error','-y','-f','f32le','-ac','2','-ar',str(SR),'-i','-','-ac','1','-c:a','libmp3lame','-b:a','96k',f'{OUT}/{name}.mp3'],input=x.astype(np.float32).tobytes(),check=True)
     print(name, f'{len(x)/SR:.2f}s', note)
 k=load(D+'Grime God - Drum Stall.wav'); finish(k,0.9,'kick')
 e=load(D+'Deviants 808 - Spinz.wav'); f=f0(e); midi=69+12*np.log2(f/440)
