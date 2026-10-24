@@ -1,7 +1,6 @@
-import { PAGE_WORDS } from "../data/work";
+import { PAGE_WORDS, SITE } from "../data/work";
 
 // The home page, a page per word, the résumé and the plain-text version.
-const SITE = "https://tochibedford.com";
 const urls = ["/", ...[...PAGE_WORDS].map((w) => `/${w}`), "/tochukwu-bedford-resume.pdf", "/llms.txt"];
 
 export function GET() {

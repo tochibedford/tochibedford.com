@@ -1,8 +1,7 @@
-import { entries, GROUPS, EMAIL, RESUME_PDF } from "../data/work";
+import { entries, GROUPS, EMAIL, RESUME_PDF, SITE } from "../data/work";
 
 // A plain-text version of the whole site for AI agents and anything else that reads text
 // rather than a canvas instrument (see llmstxt.org). Built from the same data as the page.
-const SITE = "https://tochibedford.com";
 const plain = (html: string) =>
   html.replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/g, "$2 ($1)").replace(/<[^>]+>/g, "");
 const link = (href: string) => (href.startsWith("/") ? SITE + href : href);

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tochibedford.com/sitemap.xml
+Sitemap: https://dev.tochibedford.com/sitemap.xml

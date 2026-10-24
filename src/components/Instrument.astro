@@ -1,7 +1,7 @@
 ---
 // The whole site: the instrument, the card and the list view. "/" renders it with nothing open;
 // each word's page ("/foundry", "/generalist") renders it with that word's card open.
-import { entries, GROUPS, RESUME_PDF, EMAIL, HOME_TITLE, pageTitle, type Entry } from "../data/work";
+import { entries, GROUPS, RESUME_PDF, EMAIL, SITE, HOME_TITLE, pageTitle, type Entry } from "../data/work";
 interface Props {
   entry?: Entry;
 }
@@ -10,13 +10,9 @@ const groups = GROUPS.filter((g) => entries.some((e) => e.group === g));
 const workGroups = groups.filter((g) => g !== "Me");
 const about = entries.find((e) => e.word === "about")!;
 const essay = entries.find((e) => e.word === "generalist")!;
-const SITE = "https://tochibedford.com";
-// Preview images are fetched from the site that built the page, so a deploy on another domain
-// (dev.tochibedford.com) shows its own images. Set SITE_ORIGIN there; production needs nothing.
-const ORIGIN = (import.meta.env.SITE_ORIGIN || SITE).replace(/\/+$/, "");
 const title = entry ? pageTitle(entry) : HOME_TITLE;
 const url = entry ? `${SITE}/${entry.word}` : `${SITE}/`;
-const ogImage = entry ? `${ORIGIN}/og/${entry.word}.png` : `${ORIGIN}/og.png`;
+const ogImage = entry ? `${SITE}/og/${entry.word}.png` : `${SITE}/og.png`;
 const ogAlt = entry ? `${entry.title}, by Tochi Bedford` : "Tochi Bedford, senior software engineer in Los Angeles";
 const ME = new Set(["about", "generalist", "resume", "hello"]); // live in the header, not the project list
 const homeDescription =

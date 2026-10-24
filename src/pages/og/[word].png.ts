@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import satori from "satori";
 import sharp from "sharp";
-import { entries, PAGE_WORDS, type Entry } from "../../data/work";
+import { entries, PAGE_WORDS, SITE, type Entry } from "../../data/work";
 
 // Link-preview images, one per word page, drawn at build time: the site's blue with its title,
 // meta line and the opening of the first paragraph, like the card that opens on the page.
@@ -60,7 +60,7 @@ function card(e: Entry): Node {
         h(
           "div",
           { fontFamily: "DM Mono", fontSize: 24, background: C.blush, color: C.deep, padding: "12px 24px", borderRadius: 999 },
-          `tochibedford.com/${e.word}`
+          `${SITE.replace(/^https?:\/\//, "")}/${e.word}`
         )
       ),
       h(

@@ -17,6 +17,8 @@ export type Entry = {
   links?: { label: string; href: string }[];
 };
 
+/** Where the site lives. Canonical URLs, the sitemap, link previews and llms.txt all build on it. */
+export const SITE = "https://dev.tochibedford.com";
 export const RESUME_PDF = "/tochukwu-bedford-resume.pdf";
 export const HOME_TITLE = "Tochi Bedford · Senior Software Engineer in Los Angeles";
 export const pageTitle = (e: Entry) => `${e.title} · Tochi Bedford`;
